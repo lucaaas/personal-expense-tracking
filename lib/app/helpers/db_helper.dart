@@ -7,15 +7,11 @@ class DBHelper {
 
   DBHelper._() {
     _initDatabase().then((Database database) => _database = database);
-    print('iniciou');
   }
 
   static getInstance() {
-    if (_instance != null) {
-      return _instance;
-    } else {
-      _instance = DBHelper._();
-    }
+    _instance ??= DBHelper._();
+    return _instance;
   }
 
   Future<int> delete(String table, String where, List whereArgs) async {
@@ -102,13 +98,14 @@ class DBHelper {
     final dbPath = await getDatabasesPath();
     return openDatabase(path.join(dbPath, 'finances.db'), onCreate: (db, version) {
       db.execute('PRAGMA foreign_keys = ON');
-      db.execute('CREATE TABLE credit_card(id INTEGER PRIMARY KEY, name TEXT NOT NULL, color INTEGER, createdAt TEXT NOT NULL);');
+      db.execute(
+          'CREATE TABLE credit_card(id INTEGER PRIMARY KEY, name TEXT NOT NULL, color INTEGER, createdAt TEXT NOT NULL);');
       db.execute(
           'CREATE TABLE category(id INTEGER PRIMARY KEY NOT NULL, name TEXT NOT NULL, color INTEGER, description TEXT, createdAt TEXT NOT NULL);');
       db.execute(
           'CREATE TABLE transaction(id INTEGER PRIMARY KEY NOT NULL, description TEXT NOT NULL, value FLOAT NOT NULL, date TEXT, createdAt TEXT NOT NULL, credit_card INTEGER, FOREIGN KEY(credit_card) REFERENCES credit_card(id));');
       db.execute(
           'CREATE TABLE transaction_has_category(id_transaction INTEGER NOT NULL, id_category INTEGER NOT NULL, createdAt TEXT NOT NULL, PRIMARY KEY(id_transaction, id_category), FOREIGN KEY(id_transaction) REFERENCES transaction(id), FOREIGN KEY(id_category) REFERENCES category(id));');
-      }, version: 1);
+    }, version: 1);
   }
 }
