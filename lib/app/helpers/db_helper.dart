@@ -14,6 +14,9 @@ class DBHelper {
     return _instance;
   }
 
+  /// This deletes rows from a table that satisfies the [where] condition.
+  ///
+  /// Returns the number of rows deleted.
   Future<int> delete(String table, String where, List whereArgs) async {
     final db = await _database;
     return await db.delete(table, where: where, whereArgs: whereArgs);
