@@ -6,7 +6,7 @@ abstract mixin class BaseConnector<T extends BaseModel<dynamic>> {
 
   String get table;
 
-  Future<int> delete(T model) async {
+  Future<int> remove(T model) async {
     return await _helper.delete(table, 'id=?', [model.id]);
   }
 
@@ -14,6 +14,11 @@ abstract mixin class BaseConnector<T extends BaseModel<dynamic>> {
     List<Map<String, dynamic>> data = await _helper.getData(table: table);
     List<T> models = data.map((Map<String, dynamic> item) => toObject(item)).toList();
     return models;
+  }
+
+  Future<T> getById(int id) async {
+    Map<String, dynamic> data = await _helper.getDataById(table: table, id: id);
+    return toObject(data);
   }
 
   Future<int> insertOrUpdate(T model) async {
