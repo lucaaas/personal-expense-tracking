@@ -7,13 +7,26 @@ class CategoryModel extends BaseModel<CategoryModel> {
 
   CategoryModel({super.id, super.createdAt, required this.name, this.color = "#ffffff", this.description});
 
+  CategoryModel.fromMap(Map<String, dynamic> data)
+      : name = data["name"],
+        color = data["color"],
+        description = data["description"],
+        super(id: data["id"], createdAt: DateTime.parse(data["createdAt"]));
+
   CategoryModel.empty()
       : name = "",
         color = "#ffffff",
-        super();
+        super() {
+    populate();
+  }
 
   static Future<List<CategoryModel>> list() async {
     return CategoryModel.empty().getAll();
+  }
+
+  populate() async {
+    final CategoryModel model = CategoryModel(name: "My Category", color: "#FF0000");
+    await model.save();
   }
 
   @override
@@ -32,12 +45,6 @@ class CategoryModel extends BaseModel<CategoryModel> {
 
   @override
   CategoryModel toObject(Map<String, dynamic> data) {
-    return CategoryModel(
-      id: data['id'],
-      createdAt: DateTime.parse(data["createdAt"]),
-      name: data["name"],
-      color: data["color"],
-      description: data["description"],
-    );
+    return CategoryModel.fromMap(data);
   }
 }
