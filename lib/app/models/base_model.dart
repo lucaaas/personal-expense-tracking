@@ -14,4 +14,8 @@ abstract class BaseModel<T extends BaseModel<dynamic>> with BaseConnector<T> {
   Future<int> save() {
     return super.insertOrUpdate(this as T);
   }
+
+  Future<int> delete() {
+    return super.remove(this as T);
+  }
 }
