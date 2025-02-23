@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:personal_expense_tracker/app/helpers/get_constrasting_text_color.dart';
 
 class ChipWidget extends StatefulWidget {
   final Color color;
@@ -38,10 +39,7 @@ class _ChipWidgetState extends State<ChipWidget> {
 
   Color _getContrastingTextColor(Color backgroundColor) {
     if (_isSelected) {
-      double brightness =
-          (backgroundColor.red * 0.299 + backgroundColor.green * 0.587 + backgroundColor.blue * 0.114) / 255;
-
-      return brightness > 0.5 ? CupertinoColors.black : CupertinoColors.white;
+      return getContrastingTextColor(backgroundColor);
     } else {
       return backgroundColor;
     }
