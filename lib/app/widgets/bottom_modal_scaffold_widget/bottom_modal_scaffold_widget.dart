@@ -39,11 +39,6 @@ class BottomModalScaffoldWidget extends StatelessWidget {
               Container(
                 height: double.infinity,
                 alignment: Alignment.center,
-                decoration: const BoxDecoration(
-                  border: Border(
-                    top: BorderSide(color: CupertinoColors.systemGrey, width: 10, style: BorderStyle.solid),
-                  ),
-                ),
                 child: Text(
                   title,
                   style: const TextStyle(fontWeight: FontWeight.bold),
