@@ -26,8 +26,17 @@ class _ChipWidgetState extends State<ChipWidget> {
 
   @override
   void initState() {
-    _isSelected = widget.isSelected;
     super.initState();
+    _isSelected = widget.isSelected;
+  }
+
+  @override
+  void didUpdateWidget(covariant ChipWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    setState(() {
+      _isSelected = widget.isSelected;
+    });
   }
 
   void _onTap() {
