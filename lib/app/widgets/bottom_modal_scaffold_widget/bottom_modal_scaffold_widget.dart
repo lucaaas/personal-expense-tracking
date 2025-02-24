@@ -72,8 +72,8 @@ class BottomModalScaffoldWidget extends StatelessWidget {
   });
 }
 
-void showBottomModalWidget({required BuildContext context, required Widget child}) {
-  showCupertinoModalPopup(
+Future<T?> showBottomModalWidget<T>({required BuildContext context, required Widget child}) {
+  return showCupertinoModalPopup(
     context: context,
     builder: (BuildContext context) {
       return Padding(
