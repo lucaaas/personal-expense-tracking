@@ -26,16 +26,17 @@ class BottomModalScaffoldWidget extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              showCancelButton
-                  ? CupertinoButton.filled(
-                      onPressed: () => {},
-                      padding: EdgeInsets.zero,
-                      child: Text(
-                        "Cancelar",
-                        style: TextStyle(color: CupertinoColors.destructiveRed.darkHighContrastElevatedColor),
-                      ),
-                    )
-                  : const SizedBox(),
+              Visibility(
+                visible: showCancelButton,
+                child: CupertinoButton.filled(
+                  onPressed: () => {},
+                  padding: EdgeInsets.zero,
+                  child: Text(
+                    "Cancelar",
+                    style: TextStyle(color: CupertinoColors.destructiveRed.darkHighContrastElevatedColor),
+                  ),
+                ),
+              ),
               Container(
                 height: double.infinity,
                 alignment: Alignment.center,
@@ -44,13 +45,14 @@ class BottomModalScaffoldWidget extends StatelessWidget {
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
-              showOkButton
-                  ? CupertinoButton.filled(
-                      onPressed: () => onOk?.call(),
-                      padding: EdgeInsets.zero,
-                      child: Text(okButtonLabel),
-                    )
-                  : const SizedBox(),
+              Visibility(
+                visible: showOkButton,
+                child: CupertinoButton.filled(
+                  onPressed: () => onOk?.call(),
+                  padding: EdgeInsets.zero,
+                  child: Text(okButtonLabel),
+                ),
+              ),
             ],
           ),
         ),
