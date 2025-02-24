@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:flutter/cupertino.dart';
 import 'package:personal_expense_tracker/app/models/base_model.dart';
 
 class CategoryModel extends BaseModel<CategoryModel> {
@@ -7,7 +8,7 @@ class CategoryModel extends BaseModel<CategoryModel> {
   String color;
   String? description;
 
-  CategoryModel({super.id, super.createdAt, required this.name, this.color = "#ffffff", this.description});
+  CategoryModel({super.id, super.createdAt, required this.name, this.color = "0xFFFF9700", this.description});
 
   CategoryModel.fromMap(Map<String, dynamic> data)
       : name = data["name"],
@@ -17,7 +18,7 @@ class CategoryModel extends BaseModel<CategoryModel> {
 
   CategoryModel.empty()
       : name = "",
-        color = "#ffffff",
+        color = "0xFFFF9700",
         super() {
     populate();
   }
@@ -32,8 +33,7 @@ class CategoryModel extends BaseModel<CategoryModel> {
   }
 
   Color get colorValue {
-    String hexColor = color.replaceAll('#', '');
-    return Color(int.parse(hexColor, radix: 16));
+    return Color(int.parse(color));
   }
 
   @override
