@@ -23,7 +23,9 @@ abstract mixin class BaseConnector<T extends BaseModel<dynamic>> {
 
   Future<int> insertOrUpdate(T model) async {
     if (model.id == null) {
-      return await _helper.insert(table: table, data: model.toMap());
+      int id = await _helper.insert(table: table, data: model.toMap());
+      model.id = id;
+      return id;
     } else {
       return await _helper.update(table: table, data: model.toMap(), where: 'id=?', whereArgs: [model.id]);
     }
