@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:personal_expense_tracker/app/models/base_model.dart';
 
 class CategoryModel extends BaseModel<CategoryModel> {
@@ -27,6 +29,11 @@ class CategoryModel extends BaseModel<CategoryModel> {
   populate() async {
     final CategoryModel model = CategoryModel(name: "My Category", color: "#FF0000");
     await model.save();
+  }
+
+  Color get colorValue {
+    String hexColor = color.replaceAll('#', '');
+    return Color(int.parse(hexColor, radix: 16));
   }
 
   @override
