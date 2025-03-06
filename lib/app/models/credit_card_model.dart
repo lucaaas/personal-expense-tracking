@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:personal_expense_tracker/app/models/base_model.dart';
 
 class CreditCardModel extends BaseModel<CreditCardModel> {
@@ -13,13 +15,15 @@ class CreditCardModel extends BaseModel<CreditCardModel> {
 
   CreditCardModel.empty()
       : name = "",
-        color = "",
+        color = "0xFFFF9700",
         super() {
     populate();
   }
 
   @override
   String get table => "credit_card";
+
+  get colorValue => Color(int.parse(color));
 
   @override
   CreditCardModel toObject(Map<String, dynamic> data) {
