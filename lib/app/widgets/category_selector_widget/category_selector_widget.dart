@@ -25,6 +25,12 @@ class _CategorySelectorWidgetState extends State<CategorySelectorWidget> {
   }
 
   @override
+  void didUpdateWidget(covariant CategorySelectorWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _shownCategories = List.from(widget.categories);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
