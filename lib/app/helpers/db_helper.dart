@@ -6,7 +6,7 @@ class DBHelper {
   late Database _database;
 
   DBHelper._() {
-    _initDatabase().then((Database database) => _database = database);
+    _initDatabase();
   }
 
   static getInstance() {
@@ -97,9 +97,9 @@ class DBHelper {
   /// 'transaction', and 'transaction_has_category'.
   ///
   /// **Returns:** A [Future] that resolves to the opened [Database] object.
-  Future<Database> _initDatabase() async {
+  Future<void> _initDatabase() async {
     final dbPath = await getDatabasesPath();
-    return openDatabase(path.join(dbPath, 'finances.db'), onCreate: (db, version) {
+    _database = await openDatabase(path.join(dbPath, 'finances.db'), onCreate: (db, version) {
       db.execute('PRAGMA foreign_keys = ON');
       db.execute(
           'CREATE TABLE credit_card(id INTEGER PRIMARY KEY, name TEXT NOT NULL, color INTEGER, createdAt TEXT NOT NULL);');
