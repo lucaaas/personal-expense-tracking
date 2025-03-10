@@ -4,8 +4,8 @@ class MoneyFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
     String cleanText = newValue.text.replaceAll(RegExp(r'\D'), '');
-    print(cleanText);
-    TextEditingValue formattedValue = TextEditingValue();
+    TextEditingValue formattedValue = const TextEditingValue();
+
     if (cleanText.isEmpty) {
       formattedValue = formattedValue.copyWith(text: '0,00');
     } else if (cleanText.length == 1) {
