@@ -12,24 +12,17 @@ class CategoryModel extends BaseModel<CategoryModel> {
 
   CategoryModel.fromMap(Map<String, dynamic> data)
       : name = data["name"],
-        color = data["color"],
+        color = data["color"].toString(),
         description = data["description"],
         super(id: data["id"], createdAt: DateTime.parse(data["createdAt"]));
 
   CategoryModel.empty()
       : name = "",
         color = "0xFFFF9700",
-        super() {
-    populate();
-  }
+        super() {}
 
   static Future<List<CategoryModel>> list() async {
     return CategoryModel.empty().getAll();
-  }
-
-  populate() async {
-    final CategoryModel model = CategoryModel(name: "My Category", color: "#FF0000");
-    await model.save();
   }
 
   Color get colorValue {

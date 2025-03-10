@@ -35,27 +35,12 @@ class TransactionModel extends BaseModel<TransactionModel> with TransactionConne
   TransactionModel.empty()
       : description = '',
         value = 0,
-        categories = [] {
-    populate();
-  }
+        categories = [] {}
 
   static Future<List<TransactionModel>> list() async {
     List<TransactionModel> transactions = await TransactionModel.empty().getAll();
 
     return transactions;
-  }
-
-  populate() async {
-    final CreditCardModel creditCard = await CreditCardModel.empty().getById(1);
-    final CategoryModel category = await CategoryModel.empty().getById(1);
-    final TransactionModel transaction = TransactionModel(
-      description: "My Transaction",
-      value: 100.0,
-      date: DateTime.now(),
-      creditCard: creditCard,
-      categories: [category],
-    );
-    await transaction.save();
   }
 
   @override

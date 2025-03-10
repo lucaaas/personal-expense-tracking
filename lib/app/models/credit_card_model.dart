@@ -10,15 +10,13 @@ class CreditCardModel extends BaseModel<CreditCardModel> {
 
   CreditCardModel.fromMap(Map<String, dynamic> data)
       : name = data["name"],
-        color = data["color"],
+        color = data["color"].toString(),
         super(id: data["id"], createdAt: DateTime.parse(data["createdAt"]));
 
   CreditCardModel.empty()
       : name = "",
         color = "0xFFFF9700",
-        super() {
-    populate();
-  }
+        super() {}
 
   @override
   String get table => "credit_card";
@@ -28,11 +26,6 @@ class CreditCardModel extends BaseModel<CreditCardModel> {
   @override
   CreditCardModel toObject(Map<String, dynamic> data) {
     return CreditCardModel.fromMap(data);
-  }
-
-  Future<void> populate() async {
-    final CreditCardModel model = CreditCardModel(name: "My Card", color: "#FF0000");
-    await model.save();
   }
 
   static Future<List<CreditCardModel>> list() async {
