@@ -83,6 +83,7 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
             CreditCardSelectorWidget(
               selectedCreditCard: _controller.transaction.creditCard,
               creditCards: creditCards,
+              onSaved: (creditCard) => _controller.transaction.creditCard = creditCard,
             ),
             CategorySelectorWidget(
               selectedCategories: _controller.transaction.categories,

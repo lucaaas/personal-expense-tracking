@@ -9,8 +9,9 @@ import '../bottom_modal_scaffold_widget/bottom_modal_scaffold_widget.dart';
 class CreditCardSelectorWidget extends StatefulWidget {
   final List<CreditCardModel> creditCards;
   final CreditCardModel? selectedCreditCard;
+  final void Function(CreditCardModel?)? onSaved;
 
-  const CreditCardSelectorWidget({super.key, required this.creditCards, this.selectedCreditCard});
+  const CreditCardSelectorWidget({super.key, required this.creditCards, this.selectedCreditCard, this.onSaved});
 
   @override
   State<CreditCardSelectorWidget> createState() => _CreditCardSelectorWidgetState();
@@ -18,7 +19,7 @@ class CreditCardSelectorWidget extends StatefulWidget {
 
 class _CreditCardSelectorWidgetState extends State<CreditCardSelectorWidget> {
   CreditCardModel? _selectedCreditCard;
-  TextEditingController _controller = TextEditingController();
+  final TextEditingController _controller = TextEditingController();
 
   @override
   void initState() {
@@ -36,6 +37,7 @@ class _CreditCardSelectorWidgetState extends State<CreditCardSelectorWidget> {
       placeholder: 'Selecione o cartão de crédito',
       readOnly: true,
       onTap: _openSelector,
+      onSaved: _onSaved,
       style: _getTextStyle(),
       controller: _controller,
       decoration: _getDecoration(),
@@ -122,6 +124,12 @@ class _CreditCardSelectorWidgetState extends State<CreditCardSelectorWidget> {
         _selectedCreditCard = creditCard;
         _controller.text = creditCard.name;
       });
+    }
+  }
+
+  void _onSaved(_) {
+    if (widget.onSaved != null) {
+      widget.onSaved!(_selectedCreditCard);
     }
   }
 

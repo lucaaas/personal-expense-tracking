@@ -17,12 +17,11 @@ class TransactionFormController {
     if (formKey.currentState!.validate()) {
       formKey.currentState!.save();
 
-      if (type == "expense") {
+      if (type == TransactionType.expense) {
         transaction.value = -transaction.value;
       }
 
       await transaction.save();
-      print(transaction.id);
     } else {
       throw Exception("Invalid form");
     }
