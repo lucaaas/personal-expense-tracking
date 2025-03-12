@@ -47,14 +47,19 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
       child: Form(
         key: _controller.formKey,
         child: CupertinoFormSection.insetGrouped(
+          margin: const EdgeInsets.symmetric(vertical: 25, horizontal: 5),
           children: [
-            SegmentedButtonFormField<TransactionType>(
-              onSaved: (newValue) => _controller.type = newValue!,
-              initialValue: _controller.type,
-              options: const {
-                "Saída": TransactionType.expense,
-                "Entrada": TransactionType.income,
-              },
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: SegmentedButtonFormField<TransactionType>(
+                onSaved: (newValue) => _controller.type = newValue!,
+                initialValue: _controller.type,
+                options: const {
+                  "Saída": TransactionType.expense,
+                  "Entrada": TransactionType.income,
+                },
+              ),
             ),
             TextFormFieldWidget(
               label: "Descrição",
