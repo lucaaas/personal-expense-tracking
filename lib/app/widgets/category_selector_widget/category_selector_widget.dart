@@ -2,8 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:personal_expense_tracker/app/models/category_model.dart';
 import 'package:personal_expense_tracker/app/pages/category_form_page/category_form_page.dart';
 import 'package:personal_expense_tracker/app/widgets/bottom_modal_scaffold_widget/bottom_modal_scaffold_widget.dart';
-import 'package:personal_expense_tracker/app/widgets/chip_button_widget/chip_button_widget.dart';
-import 'package:personal_expense_tracker/app/widgets/chip_widget/chip_widget.dart';
+import 'package:personal_expense_tracker/app/widgets/chip_widget/chip_button_widget.dart';
+import 'package:personal_expense_tracker/app/widgets/chip_widget/chip_selectable_widget.dart';
 
 class CategorySelectorWidget extends StatefulWidget {
   final List<CategoryModel> categories;
@@ -44,7 +44,7 @@ class _CategorySelectorWidgetState extends State<CategorySelectorWidget> {
           alignment: WrapAlignment.spaceAround,
           children: [
             ..._shownCategories.map(
-              (category) => ChipWidget(
+              (category) => ChipSelectableWidget(
                 color: category.colorValue,
                 label: category.name,
                 isSelected: widget.selectedCategories.contains(category),
