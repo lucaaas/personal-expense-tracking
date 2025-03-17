@@ -43,6 +43,13 @@ class TransactionModel extends BaseModel<TransactionModel> with TransactionConne
     return transactions;
   }
 
+  static Future<List<DateTime>> getTransactionsDateRange() async {
+    TransactionModel firstTransaction = (await TransactionModel.empty().filter(limit: 1, orderBy: 'date ASC')).first;
+    TransactionModel lastTransaction = (await TransactionModel.empty().filter(limit: 1, orderBy: 'date DESC')).first;
+
+    return [firstTransaction.date!, lastTransaction.date!];
+  }
+
   @override
   Future<int> save() {
     for (CategoryModel category in categories) {
