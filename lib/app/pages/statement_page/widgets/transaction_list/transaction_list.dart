@@ -12,10 +12,9 @@ class TransactionList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: ListView.builder(
-        shrinkWrap: true,
+    return SliverPadding(
+      padding: const EdgeInsets.all(8),
+      sliver: SliverList.builder(
         itemCount: transactions.length,
         itemBuilder: _buildItem,
       ),
