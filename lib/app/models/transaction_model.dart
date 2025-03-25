@@ -50,6 +50,16 @@ class TransactionModel extends BaseModel<TransactionModel> with TransactionConne
     return [firstTransaction.date!, lastTransaction.date!];
   }
 
+  static Future<List<TransactionModel>> getTransactionsByMonthYear(int month, int year) async {
+    List<TransactionModel> transactions = await TransactionModel.empty().filter(
+      where: 'strftime("%m", date) = ? AND strftime("%Y", date) = ?',
+      whereArgs: [month.toString().padLeft(2, '0'), year.toString()],
+      orderBy: 'date DESC',
+    );
+
+    return transactions;
+  }
+
   @override
   Future<int> save() {
     for (CategoryModel category in categories) {
