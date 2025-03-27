@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:personal_expense_tracker/app/models/transaction_model.dart';
+import 'package:personal_expense_tracker/app/pages/statement_page/widgets/month_resume/month_resume.dart';
 import 'package:personal_expense_tracker/app/pages/statement_page/widgets/transaction_list/transaction_list.dart';
 import 'package:personal_expense_tracker/app/providers/transaction_provider.dart';
 import 'package:personal_expense_tracker/app/utils/app_routes.dart';
@@ -15,8 +15,7 @@ class StatementPage extends StatefulWidget {
 }
 
 class _StatementPageState extends State<StatementPage> {
-  late TransactionProvider provider;
-  List<TransactionModel> _transactions = [];
+  TransactionCache? _transaction;
 
   bool isLoading = true;
   int _index = 0;
@@ -24,9 +23,7 @@ class _StatementPageState extends State<StatementPage> {
   @override
   void initState() {
     super.initState();
-
-    provider = Provider.of<TransactionProvider>(context, listen: false);
-    Future.delayed(const Duration(seconds: 2), _loadTransactions);
+    Future.delayed(const Duration(seconds: 5), _loadTransactions);
   }
 
   @override
@@ -43,27 +40,30 @@ class _StatementPageState extends State<StatementPage> {
           ),
         ),
       ),
-      child: !isLoading
-          ? CustomScrollView(
-              slivers: [
-                Consumer(
-                  builder: (context, value, child) => SliverPersistentHeader(
-                    pinned: true,
-                    delegate: _HeaderDelegate(
-                      tabBar: TabBarWidget(
-                        items: provider.months.map((month) => TabBarItem(title: month)).toList(),
-                        selectedIndex: _index,
-                        onTabChanged: _changeTab,
-                      ),
-                    ),
-                  ),
+      child: CustomScrollView(
+        slivers: [
+          Consumer<TransactionProvider>(
+            builder: (context, provider, child) => SliverPersistentHeader(
+              pinned: true,
+              delegate: _HeaderDelegate(
+                tabBar: TabBarWidget(
+                  items: provider.months.map((month) => TabBarItem(title: month)).toList(),
+                  selectedIndex: _index,
+                  onTabChanged: _changeTab,
                 ),
-                _transactions.isNotEmpty
-                    ? TransactionList(transactions: _transactions)
-                    : const SliverToBoxAdapter(child: Center(child: Text("Nenhuma transação encontrada"))),
-              ],
-            )
-          : const Center(child: CircularProgressIndicator()),
+              ),
+            ),
+          ),
+          if (!isLoading)
+            ...(_buildMonthInformation())
+          else
+            const SliverFillRemaining(
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
+            ),
+        ],
+      ),
     );
   }
 
@@ -72,13 +72,14 @@ class _StatementPageState extends State<StatementPage> {
   }
 
   Future<void> _loadTransactions() async {
+    TransactionProvider provider = Provider.of<TransactionProvider>(context, listen: false);
     String selectedMonth = provider.months.isEmpty ? '' : provider.months.last;
 
     if (selectedMonth.isNotEmpty) {
-      List<TransactionModel> transactions = await provider.getTransactionsByMonthYear(selectedMonth);
+      TransactionCache transaction = await provider.getTransactionsByMonthYear(selectedMonth);
 
       setState(() {
-        _transactions = transactions;
+        _transaction = transaction;
         _index = provider.months.indexOf(selectedMonth);
         isLoading = false;
       });
@@ -88,16 +89,34 @@ class _StatementPageState extends State<StatementPage> {
   }
 
   void _changeTab(int index) async {
-    setState(() => isLoading = true);
-
-    final List<TransactionModel> transactions =
-        await provider.getTransactionsByMonthYear(provider.months.elementAt(index));
-
     setState(() {
       _index = index;
-      _transactions = transactions;
+      isLoading = true;
+    });
+
+    TransactionProvider provider = Provider.of<TransactionProvider>(context, listen: false);
+    final TransactionCache transaction = await provider.getTransactionsByMonthYear(provider.months.elementAt(index));
+
+    setState(() {
+      _transaction = transaction;
       isLoading = false;
     });
+  }
+
+  List<Widget> _buildMonthInformation() {
+    if (_transaction == null || _transaction!.transactions.isEmpty) {
+      return [const SliverToBoxAdapter(child: Center(child: Text("Nenhuma transação encontrada")))];
+    } else {
+      return [
+        SliverPadding(
+          padding: const EdgeInsets.all(10),
+          sliver: SliverToBoxAdapter(
+            child: MonthResume(transaction: _transaction!),
+          ),
+        ),
+        TransactionList(transactions: _transaction!.transactions)
+      ];
+    }
   }
 }
 
