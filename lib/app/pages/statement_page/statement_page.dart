@@ -23,7 +23,7 @@ class _StatementPageState extends State<StatementPage> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 5), _loadTransactions);
+    _loadTransactions();
   }
 
   @override
@@ -73,6 +73,7 @@ class _StatementPageState extends State<StatementPage> {
 
   Future<void> _loadTransactions() async {
     TransactionProvider provider = Provider.of<TransactionProvider>(context, listen: false);
+
     String selectedMonth = provider.months.isEmpty ? '' : provider.months.last;
 
     if (selectedMonth.isNotEmpty) {

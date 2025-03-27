@@ -20,6 +20,10 @@ class TransactionProvider with ChangeNotifier {
     _generateGroupedTransactionsKeys();
   }
 
+  Future<void> init() async {
+    await _generateGroupedTransactionsKeys();
+  }
+
   Future<TransactionCache> getTransactionsByMonthYear(String monthYear) async {
     if (!_groupedTransactions[monthYear]!.isCached) {
       int month = int.parse(monthYear.split('/')[0]);
