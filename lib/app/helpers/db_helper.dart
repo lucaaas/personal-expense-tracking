@@ -9,9 +9,9 @@ class DBHelper {
     _initDatabase();
   }
 
-  static getInstance() {
+  static DBHelper getInstance() {
     _instance ??= DBHelper._();
-    return _instance;
+    return _instance!;
   }
 
   /// This deletes rows from a table that satisfies the [where] condition.
@@ -37,8 +37,7 @@ class DBHelper {
     int? limit,
     String? orderBy,
   }) async {
-    final db = _database;
-    return db.query(
+    return _database.query(
       table,
       columns: columns,
       where: where,
@@ -69,8 +68,7 @@ class DBHelper {
   /// int idInserted = await database.insert(tableModel, model.toMap());
   /// ```
   Future<int> insert({required String table, required Map<String, dynamic> data}) async {
-    final db = _database;
-    return await db.insert(table, data, conflictAlgorithm: ConflictAlgorithm.replace);
+    return await _database.insert(table, data, conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   /// Updates the [table] with [data] values that satisfies the [where] condition.
@@ -85,8 +83,7 @@ class DBHelper {
     required String where,
     required List whereArgs,
   }) async {
-    final db = _database;
-    return await db.update(table, data, where: where, whereArgs: whereArgs);
+    return await _database.update(table, data, where: where, whereArgs: whereArgs);
   }
 
   /// Opens and initializes the database connection.
