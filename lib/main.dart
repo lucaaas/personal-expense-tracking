@@ -27,6 +27,15 @@ class MyApp extends StatelessWidget {
           primaryColor: CupertinoColors.systemPurple,
           primaryContrastingColor: CupertinoColors.activeOrange,
           barBackgroundColor: CupertinoColors.systemPurple,
+          scaffoldBackgroundColor: Color.fromARGB(255, 245, 245, 245),
+          textTheme: CupertinoTextThemeData(
+            textStyle: TextStyle(fontFamily: "Inter"),
+            navTitleTextStyle: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+              color: CupertinoColors.white,
+            ),
+          ),
         ),
         routes: {
           AppRoutes.HOME: (context) => const StatementPage(),
