@@ -52,10 +52,6 @@ class TransactionList extends StatelessWidget {
   Widget _getAmountWidget(double value) {
     final Color color = value < 0 ? CupertinoColors.systemRed : CupertinoColors.systemGreen;
 
-    if (value < 0) {
-      value *= -1;
-    }
-
     return Text(
       'R\$ ${value.toStringAsFixed(2).replaceAll('.', ',')}',
       style: TextStyle(
