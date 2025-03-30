@@ -23,10 +23,15 @@ class TransactionList extends StatelessWidget {
 
   Widget _buildItem(_, index) {
     final transaction = transactions[index];
+    final DateTime date = transaction.date!;
+    final String formattedDate = '${date.day.toString().padLeft(2, '0')}/'
+        '${date.month.toString().padLeft(2, '0')}/'
+        '${date.year}';
+
     return CardWidget(
       icon: _getIcon(transaction.value),
       title: Text(transaction.description),
-      subtitle: Text(transaction.date.toString()),
+      subtitle: Text(formattedDate),
       trailing: _getAmountWidget(transaction.value),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
