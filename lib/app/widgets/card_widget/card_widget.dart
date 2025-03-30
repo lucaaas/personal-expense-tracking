@@ -27,14 +27,14 @@ class CardWidget extends StatelessWidget {
           width: 1,
           style: BorderStyle.solid,
         ),
-        borderRadius: const BorderRadius.all(Radius.circular(20)),
-        color: CupertinoTheme.of(context).scaffoldBackgroundColor,
-        boxShadow: const [
+        borderRadius: const BorderRadius.all(Radius.circular(15)),
+        color: CupertinoColors.white,
+        boxShadow: [
           BoxShadow(
-            color: CupertinoColors.inactiveGray,
-            spreadRadius: 0,
-            blurRadius: 1.5,
-            offset: Offset(0, 5),
+            color: CupertinoColors.black.withOpacity(0.1),
+            spreadRadius: 2,
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -49,7 +49,7 @@ class CardWidget extends StatelessWidget {
           ),
           if (child != null)
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 25),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
               child: child,
             )
         ],
