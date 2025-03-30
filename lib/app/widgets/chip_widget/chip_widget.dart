@@ -49,6 +49,5 @@ class ChipWidget extends StatelessWidget {
         ),
       ),
     );
-    ;
   }
 }

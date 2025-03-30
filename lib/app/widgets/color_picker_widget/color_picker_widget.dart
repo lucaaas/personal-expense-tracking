@@ -107,7 +107,6 @@ class _ColorWheel extends StatefulWidget {
 
   const _ColorWheel({
     required this.onColorChanged,
-    super.key,
   });
 
   @override

@@ -112,7 +112,7 @@ class _TabBarItemWidget extends StatelessWidget {
   final double? itemWidth;
   late final EdgeInsets _padding;
 
-  _TabBarItemWidget({super.key, required this.item, this.isSelected = false, this.itemWidth}) {
+  _TabBarItemWidget({required this.item, this.isSelected = false, this.itemWidth}) {
     if (item.title != null && item.icon != null) {
       _padding = const EdgeInsets.symmetric(vertical: 2.5);
     } else {

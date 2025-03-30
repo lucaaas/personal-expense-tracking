@@ -35,7 +35,7 @@ class TransactionModel extends BaseModel<TransactionModel> with TransactionConne
   TransactionModel.empty()
       : description = '',
         value = 0,
-        categories = [] {}
+        categories = [];
 
   static Future<List<TransactionModel>> list() async {
     List<TransactionModel> transactions = await TransactionModel.empty().getAll();

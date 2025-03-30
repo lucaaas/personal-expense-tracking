@@ -13,7 +13,7 @@ class TransactionFormController {
 
   TransactionType type = TransactionType.expense;
 
-  TransactionFormController({TransactionModel? transaction}) : transaction = transaction ?? TransactionModel.empty() {}
+  TransactionFormController({TransactionModel? transaction}) : transaction = transaction ?? TransactionModel.empty();
 
   Future<void> save(BuildContext context) async {
     if (formKey.currentState!.validate()) {
