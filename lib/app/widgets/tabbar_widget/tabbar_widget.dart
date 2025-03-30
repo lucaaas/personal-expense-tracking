@@ -37,15 +37,23 @@ class _TabBarWidgetState extends State<TabBarWidget> {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
+      margin: const EdgeInsets.all(10),
       padding: const EdgeInsets.symmetric(vertical: 5),
       decoration: BoxDecoration(
         color: CupertinoColors.white,
-        border: Border(
-          bottom: BorderSide(
-            color: CupertinoTheme.of(context).primaryColor,
-            width: 1,
-          ),
+        borderRadius: const BorderRadius.all(Radius.circular(16)),
+        border: Border.all(
+          color: CupertinoTheme.of(context).primaryColor,
+          width: 1,
         ),
+        boxShadow: [
+          BoxShadow(
+            color: CupertinoColors.black.withOpacity(0.1),
+            spreadRadius: 2,
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
@@ -82,10 +90,11 @@ class _TabBarWidgetState extends State<TabBarWidget> {
   }
 
   double get _itemWidth {
+    double availableWidth = MediaQuery.of(context).size.width - 20;
     if (widget.items.length > 3) {
-      return MediaQuery.of(context).size.width / 3;
+      return availableWidth / 3;
     } else {
-      return MediaQuery.of(context).size.width / widget.items.length;
+      return availableWidth / widget.items.length;
     }
   }
 }
