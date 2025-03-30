@@ -24,17 +24,18 @@ class MyApp extends StatelessWidget {
       child: CupertinoApp(
         title: 'Flutter Demo',
         theme: const CupertinoThemeData(
-          primaryColor: CupertinoColors.systemPurple,
-          primaryContrastingColor: CupertinoColors.activeOrange,
-          barBackgroundColor: CupertinoColors.systemPurple,
-          scaffoldBackgroundColor: Color.fromARGB(255, 245, 245, 245),
+          primaryColor: Color.fromARGB(255, 249, 139, 95),
+          primaryContrastingColor: Color.fromARGB(255, 113, 54, 29),
+          barBackgroundColor: Color.fromARGB(255, 249, 139, 95),
+          scaffoldBackgroundColor: Color.fromARGB(255, 255, 248, 246),
           textTheme: CupertinoTextThemeData(
-            textStyle: TextStyle(fontFamily: "Inter"),
+            textStyle: TextStyle(fontFamily: "Inter", color: Color.fromARGB(255, 113, 54, 29), fontSize: 18),
             navTitleTextStyle: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w600,
-              color: CupertinoColors.white,
+              color: Color.fromARGB(255, 113, 54, 29),
             ),
+            primaryColor: Color.fromARGB(255, 113, 54, 29),
           ),
         ),
         routes: {

@@ -39,6 +39,7 @@ class _TabBarWidgetState extends State<TabBarWidget> {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 5),
       decoration: BoxDecoration(
+        color: CupertinoColors.white,
         border: Border(
           bottom: BorderSide(
             color: CupertinoTheme.of(context).primaryColor,
