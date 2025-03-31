@@ -44,10 +44,21 @@ class TransactionModel extends BaseModel<TransactionModel> with TransactionConne
   }
 
   static Future<List<DateTime>> getTransactionsDateRange() async {
-    TransactionModel firstTransaction = (await TransactionModel.empty().filter(limit: 1, orderBy: 'date ASC')).first;
-    TransactionModel lastTransaction = (await TransactionModel.empty().filter(limit: 1, orderBy: 'date DESC')).first;
+    List<DateTime> dates =  [];
 
-    return [firstTransaction.date!, lastTransaction.date!];
+    List<TransactionModel> firstTransaction = await TransactionModel.empty().filter(limit: 1, orderBy: 'date ASC');
+
+    if (firstTransaction.isNotEmpty) {
+      dates.add(firstTransaction.first.date!);
+    }
+
+    List<TransactionModel> lastTransaction = await TransactionModel.empty().filter(limit: 1, orderBy: 'date DESC');
+
+    if (lastTransaction.isNotEmpty) {
+      dates.add(lastTransaction.first.date!);
+    }
+
+    return dates;
   }
 
   static Future<List<TransactionModel>> getTransactionsByMonthYear(int month, int year) async {

@@ -64,8 +64,21 @@ class TransactionProvider with ChangeNotifier {
 
   Future<void> _generateGroupedTransactionsKeys() async {
     List<DateTime> dateRange = await TransactionModel.getTransactionsDateRange();
-    DateTime firstDate = dateRange[0];
-    DateTime lastDate = dateRange[1];
+    DateTime firstDate;
+    DateTime lastDate;
+
+    if(dateRange.length == 2) {
+      firstDate = dateRange[0];
+      lastDate = dateRange[1].isBefore(DateTime.now()) ? DateTime.now() : dateRange[1];
+    } else if(dateRange.length == 1) {
+      firstDate = dateRange[0];
+      lastDate = DateTime.now();
+    }
+    else {
+      firstDate = DateTime.now();
+      lastDate = DateTime.now();
+    }
+
     DateTime currentDate = firstDate;
 
     do {
