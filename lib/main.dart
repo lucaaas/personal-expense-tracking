@@ -29,8 +29,9 @@ class MyApp extends StatelessWidget {
           barBackgroundColor: Color.fromARGB(255, 249, 139, 95),
           scaffoldBackgroundColor: Color.fromARGB(255, 255, 248, 246),
           textTheme: CupertinoTextThemeData(
-            textStyle: TextStyle(fontFamily: "Inter", color: Color.fromARGB(255, 113, 54, 29), fontSize: 18),
+            textStyle: TextStyle(fontFamily: "Inter", color: Color.fromARGB(255, 113, 54, 29), fontSize: 18, inherit: false,),
             navTitleTextStyle: TextStyle(
+              inherit: false,
               fontSize: 20,
               fontWeight: FontWeight.w600,
               color: Color.fromARGB(255, 113, 54, 29),
