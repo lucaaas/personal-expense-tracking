@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:flutter/cupertino.dart';
 import 'package:personal_expense_tracker/app/models/transaction_model.dart';
 
@@ -12,11 +14,12 @@ class TransactionCache {
 }
 
 class TransactionProvider with ChangeNotifier {
-  final Map<String, TransactionCache> _groupedTransactions = {};
+  late SplayTreeMap<String, TransactionCache> _groupedTransactions;
 
   List<String> get months => _groupedTransactions.keys.toList();
 
   TransactionProvider() {
+    _groupedTransactions = SplayTreeMap(_compareKeys);
     _generateGroupedTransactionsKeys();
   }
 
@@ -109,5 +112,21 @@ class TransactionProvider with ChangeNotifier {
     }
 
     cache.balance = cache.totalIncome + cache.totalExpense;
+  }
+
+  int _compareKeys(String a, String b) {
+    List<String> aParts = a.split('/');
+    List<String> bParts = b.split('/');
+
+    int aMonth = int.parse(aParts[0]);
+    int aYear = int.parse(aParts[1]);
+
+    int bMonth = int.parse(bParts[0]);
+    int bYear = int.parse(bParts[1]);
+
+    DateTime aDate = DateTime(aYear, aMonth);
+    DateTime bDate = DateTime(bYear, bMonth);
+
+    return aDate.compareTo(bDate);
   }
 }
