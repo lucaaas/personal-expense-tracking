@@ -98,7 +98,7 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
               width: double.infinity,
               padding: const EdgeInsets.all(8),
               child: CupertinoButton.filled(
-                onPressed: _controller.save,
+                onPressed: () => _controller.save(context),
                 child: const Text("Salvar"),
               ),
             ),

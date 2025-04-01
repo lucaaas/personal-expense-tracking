@@ -19,7 +19,7 @@ class CategoryModel extends BaseModel<CategoryModel> {
   CategoryModel.empty()
       : name = "",
         color = "0xFFFF9700",
-        super() {}
+        super();
 
   static Future<List<CategoryModel>> list() async {
     return CategoryModel.empty().getAll();

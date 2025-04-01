@@ -46,7 +46,7 @@ class _CreditCardFormPageState extends State<CreditCardFormPage> {
               ),
             ),
             CupertinoTextFormFieldRow(
-              prefix: Text("Nome"),
+              prefix: const Text("Nome"),
               placeholder: "Nome",
               validator: RequiredValidator().validate,
               onSaved: (value) => controller.creditCard.name = value!,

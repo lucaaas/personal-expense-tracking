@@ -9,16 +9,16 @@ class DBHelper {
     _initDatabase();
   }
 
-  static getInstance() {
+  static DBHelper getInstance() {
     _instance ??= DBHelper._();
-    return _instance;
+    return _instance!;
   }
 
   /// This deletes rows from a table that satisfies the [where] condition.
   ///
   /// Returns the number of rows deleted.
   Future<int> delete(String table, String where, List whereArgs) async {
-    final db = await _database;
+    final db = _database;
     return await db.delete(table, where: where, whereArgs: whereArgs);
   }
 
@@ -37,8 +37,7 @@ class DBHelper {
     int? limit,
     String? orderBy,
   }) async {
-    final db = await _database;
-    return db.query(
+    return _database.query(
       table,
       columns: columns,
       where: where,
@@ -57,7 +56,7 @@ class DBHelper {
   ///  Map<String, dynamic> data = await database.getDataById(tableModel, model.id);
   ///  ```
   Future<Map<String, dynamic>> getDataById({required String table, required int id}) async {
-    final db = await _database;
+    final db = _database;
     List<Map<String, dynamic>> data = await db.query(table, where: 'id=?', whereArgs: [id]);
     return data.first;
   }
@@ -69,8 +68,7 @@ class DBHelper {
   /// int idInserted = await database.insert(tableModel, model.toMap());
   /// ```
   Future<int> insert({required String table, required Map<String, dynamic> data}) async {
-    final db = await _database;
-    return await db.insert(table, data, conflictAlgorithm: ConflictAlgorithm.replace);
+    return await _database.insert(table, data, conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   /// Updates the [table] with [data] values that satisfies the [where] condition.
@@ -85,8 +83,7 @@ class DBHelper {
     required String where,
     required List whereArgs,
   }) async {
-    final db = await _database;
-    return await db.update(table, data, where: where, whereArgs: whereArgs);
+    return await _database.update(table, data, where: where, whereArgs: whereArgs);
   }
 
   /// Opens and initializes the database connection.

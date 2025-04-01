@@ -46,13 +46,13 @@ class _CategoryFormPageState extends State<CategoryFormPage> {
               ),
             ),
             CupertinoTextFormFieldRow(
-              prefix: Text("Nome"),
+              prefix: const Text("Nome"),
               placeholder: "Nome",
               validator: RequiredValidator().validate,
               onSaved: (value) => controller.category.name = value!,
             ),
             CupertinoTextFormFieldRow(
-              prefix: Text("Descrição"),
+              prefix: const Text("Descrição"),
               placeholder: "Descrição",
               onSaved: (value) => controller.category.description = value,
             ),
@@ -60,8 +60,8 @@ class _CategoryFormPageState extends State<CategoryFormPage> {
               width: double.infinity,
               padding: const EdgeInsets.all(8),
               child: CupertinoButton.filled(
-                child: const Text("Salvar"),
                 onPressed: _save,
+                child: const Text("Salvar"),
               ),
             ),
           ],

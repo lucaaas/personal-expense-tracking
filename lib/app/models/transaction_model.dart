@@ -35,10 +35,38 @@ class TransactionModel extends BaseModel<TransactionModel> with TransactionConne
   TransactionModel.empty()
       : description = '',
         value = 0,
-        categories = [] {}
+        categories = [];
 
   static Future<List<TransactionModel>> list() async {
     List<TransactionModel> transactions = await TransactionModel.empty().getAll();
+
+    return transactions;
+  }
+
+  static Future<List<DateTime>> getTransactionsDateRange() async {
+    List<DateTime> dates =  [];
+
+    List<TransactionModel> firstTransaction = await TransactionModel.empty().filter(limit: 1, orderBy: 'date ASC');
+
+    if (firstTransaction.isNotEmpty) {
+      dates.add(firstTransaction.first.date!);
+    }
+
+    List<TransactionModel> lastTransaction = await TransactionModel.empty().filter(limit: 1, orderBy: 'date DESC');
+
+    if (lastTransaction.isNotEmpty) {
+      dates.add(lastTransaction.first.date!);
+    }
+
+    return dates;
+  }
+
+  static Future<List<TransactionModel>> getTransactionsByMonthYear(int month, int year) async {
+    List<TransactionModel> transactions = await TransactionModel.empty().filter(
+      where: 'strftime("%m", date) = ? AND strftime("%Y", date) = ?',
+      whereArgs: [month.toString().padLeft(2, '0'), year.toString()],
+      orderBy: 'date DESC',
+    );
 
     return transactions;
   }

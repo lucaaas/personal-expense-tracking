@@ -16,7 +16,7 @@ class CreditCardModel extends BaseModel<CreditCardModel> {
   CreditCardModel.empty()
       : name = "",
         color = "0xFFFF9700",
-        super() {}
+        super();
 
   @override
   String get table => "credit_card";
