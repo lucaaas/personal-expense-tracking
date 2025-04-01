@@ -23,7 +23,7 @@ class _StatementPageState extends State<StatementPage> {
   @override
   void initState() {
     super.initState();
-    _loadTransactions();
+    _load();
   }
 
   @override
@@ -71,8 +71,18 @@ class _StatementPageState extends State<StatementPage> {
     Navigator.of(context).pushNamed(AppRoutes.TRANSACTION_FORM);
   }
 
-  Future<void> _loadTransactions() async {
+  Future<void> _load() async {
     TransactionProvider provider = Provider.of<TransactionProvider>(context, listen: false);
+
+    provider.addListener(
+      () async {
+        TransactionCache transaction =
+            await provider.getTransactionsByMonthYear(provider.months.elementAt(_index));
+        setState(() {
+          _transaction = transaction;
+        });
+      },
+    );
 
     String selectedMonth = provider.months.isEmpty ? '' : provider.months.last;
 
@@ -96,7 +106,8 @@ class _StatementPageState extends State<StatementPage> {
     });
 
     TransactionProvider provider = Provider.of<TransactionProvider>(context, listen: false);
-    final TransactionCache transaction = await provider.getTransactionsByMonthYear(provider.months.elementAt(index));
+    final TransactionCache transaction =
+        await provider.getTransactionsByMonthYear(provider.months.elementAt(index));
 
     setState(() {
       _transaction = transaction;
@@ -105,19 +116,25 @@ class _StatementPageState extends State<StatementPage> {
   }
 
   List<Widget> _buildMonthInformation() {
-    if (_transaction == null || _transaction!.transactions.isEmpty) {
-      return [const SliverToBoxAdapter(child: Center(child: Text("Nenhuma transação encontrada")))];
-    } else {
-      return [
-        SliverPadding(
-          padding: const EdgeInsets.all(10),
-          sliver: SliverToBoxAdapter(
-            child: MonthResume(transaction: _transaction!),
-          ),
+    List<Widget> widgets = [];
+
+    widgets.add(
+      SliverPadding(
+        padding: const EdgeInsets.all(10),
+        sliver: SliverToBoxAdapter(
+          child: MonthResume(transaction: _transaction!),
         ),
-        TransactionList(transactions: _transaction!.transactions)
-      ];
+      ),
+    );
+
+    if (_transaction == null || _transaction!.transactions.isEmpty) {
+      widgets.add(
+          const SliverToBoxAdapter(child: Center(child: Text("Nenhuma transação encontrada"))));
+    } else {
+      widgets.add(TransactionList(transactions: _transaction!.transactions));
     }
+
+    return widgets;
   }
 }
 

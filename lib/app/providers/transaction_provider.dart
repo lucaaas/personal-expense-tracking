@@ -4,13 +4,75 @@ import 'package:flutter/cupertino.dart';
 import 'package:personal_expense_tracker/app/models/transaction_model.dart';
 
 class TransactionCache {
-  List<TransactionModel> transactions;
+  late List<TransactionModel> transactions;
+  late TransactionModel previousMonthBalance;
   bool isCached;
   double totalIncome = 0;
   double totalExpense = 0;
   double balance = 0;
 
-  TransactionCache({this.transactions = const [], this.isCached = false});
+  TransactionCache({
+    required DateTime previousMonth,
+    List<TransactionModel> transactions = const [],
+    this.isCached = false,
+  }) : transactions = [] {
+    addAllTransactions(transactions);
+
+    previousMonthBalance = TransactionModel(
+      description: "Saldo do mês anterior",
+      value: 0,
+      date: previousMonth,
+    );
+
+    addTransaction(previousMonthBalance);
+  }
+
+  void addTransaction(TransactionModel transaction) {
+    transactions.add(transaction);
+    _sortTransactions();
+    _sumTotals(transaction);
+  }
+
+  void removeTransaction(TransactionModel transaction) {
+    transactions.remove(transaction);
+
+    if (transaction.value > 0) {
+      totalIncome -= transaction.value;
+    } else {
+      totalExpense -= transaction.value;
+    }
+
+    balance = totalIncome + totalExpense;
+  }
+
+  void addAllTransactions(List<TransactionModel> transactions) {
+    this.transactions.addAll(transactions);
+    _sortTransactions();
+
+    for (TransactionModel transaction in transactions) {
+      _sumTotals(transaction);
+    }
+  }
+
+  void updatePreviousMonthBalance(double value) {
+    removeTransaction(previousMonthBalance);
+    previousMonthBalance.value = value;
+    addTransaction(previousMonthBalance);
+  }
+
+  void _sumTotals(TransactionModel transaction) {
+    if (transaction.value > 0) {
+      totalIncome += transaction.value;
+    } else {
+      totalExpense += transaction.value;
+    }
+
+    balance = totalIncome + totalExpense;
+  }
+
+  void _sortTransactions() {
+    transactions.sort((a, b) => b.date!.compareTo(a.date!));
+  }
 }
 
 class TransactionProvider with ChangeNotifier {
@@ -20,11 +82,10 @@ class TransactionProvider with ChangeNotifier {
 
   TransactionProvider() {
     _groupedTransactions = SplayTreeMap(_compareKeys);
-    _generateGroupedTransactionsKeys();
   }
 
   Future<void> init() async {
-    await _generateGroupedTransactionsKeys();
+    await _groupTransactions();
   }
 
   Future<TransactionCache> getTransactionsByMonthYear(String monthYear) async {
@@ -32,9 +93,10 @@ class TransactionProvider with ChangeNotifier {
       int month = int.parse(monthYear.split('/')[0]);
       int year = int.parse(monthYear.split('/')[1]);
 
-      _groupedTransactions[monthYear]!.transactions = await TransactionModel.getTransactionsByMonthYear(month, year);
+      _groupedTransactions[monthYear]!
+          .addAllTransactions(await TransactionModel.getTransactionsByMonthYear(month, year));
       _groupedTransactions[monthYear]!.isCached = true;
-      _sumTotals(_groupedTransactions[monthYear]!);
+      _updateBalance(_groupedTransactions[monthYear]!);
     }
 
     return _groupedTransactions[monthYear]!;
@@ -50,47 +112,34 @@ class TransactionProvider with ChangeNotifier {
     String key = _getKeyFromDate(transaction.date!);
 
     if (!_groupedTransactions.containsKey(key)) {
-      _groupedTransactions[key] = TransactionCache(transactions: [transaction], isCached: true);
-      _updateTotals(_groupedTransactions[key]!, transaction);
-      _groupedTransactions.keys.toList().sort();
+      _groupedTransactions[key] = TransactionCache(
+          transactions: [transaction],
+          isCached: true,
+          previousMonth: DateTime(transaction.date!.year, transaction.date!.month));
     } else {
       List<TransactionModel> transactions = List.from(_groupedTransactions[key]!.transactions);
 
       if (!transactions.contains(transaction)) {
-        transactions.add(transaction);
-        transactions.sort((a, b) => b.date!.compareTo(a.date!));
-        _groupedTransactions[key]!.transactions = transactions;
-        _sumTotals(_groupedTransactions[key]!);
+        _groupedTransactions[key]!.addTransaction(transaction);
       }
     }
+
+    _updateBalance(_groupedTransactions[key]!);
   }
 
-  Future<void> _generateGroupedTransactionsKeys() async {
-    List<DateTime> dateRange = await TransactionModel.getTransactionsDateRange();
-    DateTime firstDate;
-    DateTime lastDate;
+  Future<void> _groupTransactions() async {
+    final List<TransactionModel> transactions = await TransactionModel.list();
 
-    if(dateRange.length == 2) {
-      firstDate = dateRange[0];
-      lastDate = dateRange[1].isBefore(DateTime.now()) ? DateTime.now() : dateRange[1];
-    } else if(dateRange.length == 1) {
-      firstDate = dateRange[0];
-      lastDate = DateTime.now();
-    }
-    else {
-      firstDate = DateTime.now();
-      lastDate = DateTime.now();
+    if (transactions.isNotEmpty) {
+      for (TransactionModel transaction in transactions) {
+        _addToGroupedTransactions(transaction);
+      }
+    } else {
+      DateTime now = DateTime.now();
+      String key = _getKeyFromDate(now);
+      _groupedTransactions[key] = TransactionCache(previousMonth: DateTime(now.year, now.month));
     }
 
-    DateTime currentDate = firstDate;
-
-    do {
-      String key = _getKeyFromDate(currentDate);
-      _groupedTransactions[key] = TransactionCache();
-      currentDate = DateTime(currentDate.year, currentDate.month + 1);
-    } while (currentDate.isBefore(lastDate));
-
-    getTransactionsByMonthYear(_groupedTransactions.keys.last);
     notifyListeners();
   }
 
@@ -98,20 +147,12 @@ class TransactionProvider with ChangeNotifier {
     return '${date.month.toString().padLeft(2, '0')}/${date.year}';
   }
 
-  void _sumTotals(TransactionCache cache) {
-    for (TransactionModel transaction in cache.transactions) {
-      _updateTotals(cache, transaction);
+  void _updateBalance(TransactionCache cache) {
+    for (int i = 1; i < _groupedTransactions.keys.length; i++) {
+      String key = _groupedTransactions.keys.elementAt(i);
+      TransactionCache cache = _groupedTransactions[key]!;
+      cache.updatePreviousMonthBalance(_groupedTransactions.values.elementAt(i - 1).balance);
     }
-  }
-
-  void _updateTotals(TransactionCache cache, TransactionModel transaction) {
-    if (transaction.value > 0) {
-      cache.totalIncome += transaction.value;
-    } else {
-      cache.totalExpense += transaction.value;
-    }
-
-    cache.balance = cache.totalIncome + cache.totalExpense;
   }
 
   int _compareKeys(String a, String b) {
