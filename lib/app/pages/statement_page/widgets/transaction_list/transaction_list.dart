@@ -1,14 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:personal_expense_tracker/app/helpers/get_constrasting_text_color.dart';
 import 'package:personal_expense_tracker/app/models/transaction_model.dart';
-import 'package:personal_expense_tracker/app/widgets/card_widget/card_widget.dart';
+import 'package:personal_expense_tracker/app/widgets/card_widget/dismissible_card_widget.dart';
 import 'package:personal_expense_tracker/app/widgets/chip_widget/chip_widget.dart';
 import 'package:personal_expense_tracker/app/widgets/credit_card_label/credit_card_label.dart';
 
 class TransactionList extends StatelessWidget {
   final List<TransactionModel> transactions;
+  final Future<void> Function(TransactionModel) onTransactionDelete;
 
-  const TransactionList({super.key, required this.transactions});
+  const TransactionList({super.key, required this.transactions, required this.onTransactionDelete});
 
   @override
   Widget build(BuildContext context) {
@@ -28,11 +29,22 @@ class TransactionList extends StatelessWidget {
         '${date.month.toString().padLeft(2, '0')}/'
         '${date.year}';
 
-    return CardWidget(
+    return DismissibleCardWidget(
       icon: _getIcon(transaction.value),
       title: Text(transaction.description),
       subtitle: Text(formattedDate),
       trailing: _getAmountWidget(transaction.value),
+      onDismissed: (_) => onTransactionDelete(transaction),
+      background: Container(
+        color: CupertinoColors.systemRed.withOpacity(0.5),
+        padding: const EdgeInsets.only(right: 24),
+        alignment: Alignment.centerRight,
+        child: const Icon(
+          CupertinoIcons.delete,
+          color: CupertinoColors.white,
+          size: 30,
+        ),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
