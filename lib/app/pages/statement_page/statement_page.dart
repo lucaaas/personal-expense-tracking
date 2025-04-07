@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:personal_expense_tracker/app/helpers/snack_bar_helper.dart';
+import 'package:personal_expense_tracker/app/models/transaction_model.dart';
 import 'package:personal_expense_tracker/app/pages/statement_page/widgets/month_resume/month_resume.dart';
 import 'package:personal_expense_tracker/app/pages/statement_page/widgets/transaction_list/transaction_list.dart';
 import 'package:personal_expense_tracker/app/providers/transaction_provider.dart';
@@ -131,10 +133,45 @@ class _StatementPageState extends State<StatementPage> {
       widgets.add(
           const SliverToBoxAdapter(child: Center(child: Text("Nenhuma transação encontrada"))));
     } else {
-      widgets.add(TransactionList(transactions: _transaction!.transactions));
+      widgets.add(TransactionList(
+        transactions: _transaction!.transactions,
+        onTransactionDelete: _deleteTransaction,
+      ));
     }
 
     return widgets;
+  }
+
+  Future<void> _deleteTransaction(TransactionModel transaction) async {
+    TransactionProvider provider = Provider.of<TransactionProvider>(context, listen: false);
+    await provider.deleteTransaction(transaction);
+
+    const Duration duration = Duration(seconds: 5);
+    SnackBarHelper.show(
+      context: context,
+      duration: duration,
+      message: "Transação excluída",
+      leading: TweenAnimationBuilder<double>(
+        tween: Tween(begin: 1, end: 0),
+        duration: duration,
+        builder: (context, value, child) => CircularProgressIndicator(
+          value: value,
+          strokeWidth: 6,
+          color: CupertinoTheme.of(context).primaryContrastingColor,
+        ),
+      ),
+      trailing: CupertinoButton(
+        child: Text(
+          "Desfazer",
+          style: TextStyle(
+            fontSize: 16,
+            color: CupertinoTheme.of(context).primaryContrastingColor,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        onPressed: () => provider.undoDeleteTransaction(),
+      ),
+    );
   }
 }
 

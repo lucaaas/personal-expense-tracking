@@ -77,6 +77,7 @@ class TransactionCache {
 
 class TransactionProvider with ChangeNotifier {
   late SplayTreeMap<String, TransactionCache> _groupedTransactions;
+  TransactionModel? _lastDeletedTransaction;
 
   List<String> get months => _groupedTransactions.keys.toList();
 
@@ -88,6 +89,17 @@ class TransactionProvider with ChangeNotifier {
     await _groupTransactions();
   }
 
+  Future<void> deleteTransaction(TransactionModel transaction) async {
+    _lastDeletedTransaction = transaction;
+
+    String key = _getKeyFromDate(transaction.date!);
+    _groupedTransactions[key]!.removeTransaction(transaction);
+    _updateBalance();
+
+    await transaction.delete();
+    notifyListeners();
+  }
+
   Future<TransactionCache> getTransactionsByMonthYear(String monthYear) async {
     if (!_groupedTransactions[monthYear]!.isCached) {
       int month = int.parse(monthYear.split('/')[0]);
@@ -96,7 +108,7 @@ class TransactionProvider with ChangeNotifier {
       _groupedTransactions[monthYear]!
           .addAllTransactions(await TransactionModel.getTransactionsByMonthYear(month, year));
       _groupedTransactions[monthYear]!.isCached = true;
-      _updateBalance(_groupedTransactions[monthYear]!);
+      _updateBalance();
     }
 
     return _groupedTransactions[monthYear]!;
@@ -106,6 +118,18 @@ class TransactionProvider with ChangeNotifier {
     await transaction.save();
     _addToGroupedTransactions(transaction);
     notifyListeners();
+  }
+
+  Future<void> undoDeleteTransaction() async {
+    if (_lastDeletedTransaction != null) {
+      String key = _getKeyFromDate(_lastDeletedTransaction!.date!);
+      _groupedTransactions[key]!.addTransaction(_lastDeletedTransaction!);
+      await _lastDeletedTransaction!.save();
+      _lastDeletedTransaction = null;
+
+      _updateBalance();
+      notifyListeners();
+    }
   }
 
   void _addToGroupedTransactions(TransactionModel transaction) {
@@ -124,7 +148,7 @@ class TransactionProvider with ChangeNotifier {
       }
     }
 
-    _updateBalance(_groupedTransactions[key]!);
+    _updateBalance();
   }
 
   Future<void> _groupTransactions() async {
@@ -147,7 +171,7 @@ class TransactionProvider with ChangeNotifier {
     return '${date.month.toString().padLeft(2, '0')}/${date.year}';
   }
 
-  void _updateBalance(TransactionCache cache) {
+  void _updateBalance() {
     for (int i = 1; i < _groupedTransactions.keys.length; i++) {
       String key = _groupedTransactions.keys.elementAt(i);
       TransactionCache cache = _groupedTransactions[key]!;
