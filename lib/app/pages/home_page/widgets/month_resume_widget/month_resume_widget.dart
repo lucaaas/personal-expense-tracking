@@ -18,9 +18,6 @@ class MonthResumeWidget extends StatelessWidget {
     final double incomePercentage = (currentMonthInfo.totalIncome / total);
     final double expensePercentage = (currentMonthInfo.totalExpense * -1 / total);
 
-    Color color = CupertinoColors.systemGreen;
-    String title = "Entrada";
-
     return CardWidget(
       title: const Text("Resumo do mês"),
       child: Column(
