@@ -1,11 +1,42 @@
 import 'dart:collection';
 
 import 'package:flutter/cupertino.dart';
+import 'package:personal_expense_tracker/app/models/credit_card_model.dart';
 import 'package:personal_expense_tracker/app/models/transaction_model.dart';
+
+class CreditCardMonthInfo {
+  final CreditCardModel creditCard;
+  double totalExpense = 0;
+  double totalIncome = 0;
+  double balance = 0;
+
+  CreditCardMonthInfo({required this.creditCard});
+
+  void addToTotal(double value) {
+    if (value > 0) {
+      totalIncome += value;
+    } else {
+      totalExpense += value;
+    }
+
+    balance = totalIncome + totalExpense;
+  }
+
+  void subtractFromTotal(double value) {
+    if (value > 0) {
+      totalIncome -= value;
+    } else {
+      totalExpense -= value;
+    }
+
+    balance = totalIncome + totalExpense;
+  }
+}
 
 class TransactionCache {
   late List<TransactionModel> transactions;
   late TransactionModel previousMonthBalance;
+  List<CreditCardMonthInfo> _creditCardInfos = [];
   bool isCached;
   double totalIncome = 0;
   double totalExpense = 0;
@@ -27,10 +58,33 @@ class TransactionCache {
     addTransaction(previousMonthBalance);
   }
 
+  List<CreditCardMonthInfo> get creditCardInfos => List.from(_creditCardInfos);
+
+  double get totalCreditCardExpense {
+    double total = 0;
+    for (CreditCardMonthInfo info in _creditCardInfos) {
+      total += info.totalExpense;
+    }
+    return total;
+  }
+
   void addTransaction(TransactionModel transaction) {
     transactions.add(transaction);
     _sortTransactions();
     _sumTotals(transaction);
+
+    if (transaction.creditCard != null) {
+      CreditCardMonthInfo creditCardInfo;
+      try {
+        creditCardInfo =
+            _creditCardInfos.firstWhere((info) => info.creditCard == transaction.creditCard);
+      } on StateError catch (_) {
+        creditCardInfo = CreditCardMonthInfo(creditCard: transaction.creditCard!);
+        _creditCardInfos.add(creditCardInfo);
+      }
+
+      creditCardInfo.addToTotal(transaction.value);
+    }
   }
 
   void removeTransaction(TransactionModel transaction) {
@@ -40,6 +94,13 @@ class TransactionCache {
       totalIncome -= transaction.value;
     } else {
       totalExpense -= transaction.value;
+    }
+
+    if (transaction.creditCard != null) {
+      CreditCardMonthInfo creditCardInfo =
+          _creditCardInfos.firstWhere((info) => info.creditCard == transaction.creditCard);
+
+      creditCardInfo.subtractFromTotal(transaction.value);
     }
 
     balance = totalIncome + totalExpense;
