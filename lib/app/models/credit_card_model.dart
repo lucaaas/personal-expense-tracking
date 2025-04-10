@@ -37,6 +37,11 @@ class CreditCardModel extends BaseModel<CreditCardModel> {
   }
 
   @override
+  bool operator ==(Object other) {
+    return other is CreditCardModel && other.id == id;
+  }
+
+  @override
   Map<String, dynamic> toMap() {
     return {
       "id": id,
