@@ -1,16 +1,14 @@
 import 'dart:collection';
 
 import 'package:flutter/cupertino.dart';
+import 'package:personal_expense_tracker/app/models/category_model.dart';
 import 'package:personal_expense_tracker/app/models/credit_card_model.dart';
 import 'package:personal_expense_tracker/app/models/transaction_model.dart';
 
-class CreditCardMonthInfo {
-  final CreditCardModel creditCard;
+abstract class MonthInfo {
   double totalExpense = 0;
   double totalIncome = 0;
   double balance = 0;
-
-  CreditCardMonthInfo({required this.creditCard});
 
   void addToTotal(double value) {
     if (value > 0) {
@@ -33,10 +31,22 @@ class CreditCardMonthInfo {
   }
 }
 
+class CategoryMonthInfo extends MonthInfo {
+  final CategoryModel category;
+
+  CategoryMonthInfo({required this.category});
+}
+
+class CreditCardMonthInfo extends MonthInfo {
+  final CreditCardModel creditCard;
+
+  CreditCardMonthInfo({required this.creditCard});
+}
+
 class TransactionCache {
   late List<TransactionModel> transactions;
   late TransactionModel previousMonthBalance;
-  List<CreditCardMonthInfo> _creditCardInfos = [];
+  final List<CreditCardMonthInfo> _creditCardInfos = [];
   bool isCached;
   double totalIncome = 0;
   double totalExpense = 0;
@@ -59,6 +69,28 @@ class TransactionCache {
   }
 
   List<CreditCardMonthInfo> get creditCardInfos => List.from(_creditCardInfos);
+
+  List<CategoryMonthInfo> get categoriesInfo {
+    List<CategoryMonthInfo> categoryInfos = [];
+
+    for (TransactionModel transaction in transactions) {
+      if (transaction.categories.isNotEmpty) {
+        for (CategoryModel category in transaction.categories) {
+          CategoryMonthInfo categoryInfo;
+          try {
+            categoryInfo = categoryInfos.firstWhere((info) => info.category == category);
+          } on StateError catch (_) {
+            categoryInfo = CategoryMonthInfo(category: category);
+            categoryInfos.add(categoryInfo);
+          }
+
+          categoryInfo.addToTotal(transaction.value);
+        }
+      }
+    }
+
+    return categoryInfos;
+  }
 
   double get totalCreditCardExpense {
     double total = 0;
