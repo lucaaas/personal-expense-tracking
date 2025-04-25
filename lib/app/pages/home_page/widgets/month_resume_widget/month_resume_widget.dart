@@ -13,16 +13,13 @@ class MonthResumeWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double total = currentMonthInfo.totalIncome + (currentMonthInfo.totalExpense * -1);
-    final double incomePercentage = (currentMonthInfo.totalIncome / total);
-    final double expensePercentage = (currentMonthInfo.totalExpense * -1 / total);
-
-    print(
-        "total: $total / incomePercentage: $incomePercentage / expensePercentage: $expensePercentage");
+    final double total = currentMonthInfo.totalIncome + currentMonthInfo.totalExpense;
 
     return CardWidget(
       title: const Text("Resumo do mês"),
       child: GraphBarWidget(
+        prefixValue: "R\$",
+        value: total,
         bars: [
           BarInfo(
             color: CupertinoColors.systemGreen,

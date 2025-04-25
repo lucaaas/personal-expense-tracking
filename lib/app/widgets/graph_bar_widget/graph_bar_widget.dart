@@ -12,27 +12,65 @@ class BarInfo {
   }) : assert(value >= 0, "Value must be greater than or equal to 0");
 }
 
-class GraphBarWidget extends StatelessWidget {
+class GraphBarWidget extends StatefulWidget {
   final List<BarInfo> bars;
+  final String? prefixValue;
+  final double? value;
 
-  const GraphBarWidget({super.key, required this.bars});
+  const GraphBarWidget({
+    super.key,
+    required this.bars,
+    this.prefixValue = "",
+    this.value,
+  });
+
+  @override
+  State<GraphBarWidget> createState() => _GraphBarWidgetState();
+}
+
+class _GraphBarWidgetState extends State<GraphBarWidget> {
+  String? total;
+
+  @override
+  initState() {
+    super.initState();
+
+    if (widget.value != null) {
+      total = "${widget.prefixValue!} ${widget.value!.toStringAsFixed(2).replaceAll(".", ",")}";
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, constraints) {
-      return Container(
-        decoration: const BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(50))),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _GraphWidget(bars: bars, maxWidth: constraints.maxWidth),
-            const SizedBox(height: 10),
-            _SubtitleWidget(bars: bars),
-          ],
-        ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Container(
+          decoration: const BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(50))),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _getTotalWidget(),
+              const SizedBox(height: 10),
+              _GraphWidget(bars: widget.bars, maxWidth: constraints.maxWidth),
+              const SizedBox(height: 10),
+              _SubtitleWidget(bars: widget.bars),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  _getTotalWidget() {
+    if (total != null) {
+      return Text(
+        total!,
+        style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
       );
-    });
+    }
+
+    return const SizedBox();
   }
 }
 

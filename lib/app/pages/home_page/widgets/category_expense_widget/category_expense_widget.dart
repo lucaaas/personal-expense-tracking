@@ -37,7 +37,7 @@ class CategoryExpenseWidget extends StatelessWidget {
     }
 
     if (bars.isNotEmpty) {
-      children.add(GraphBarWidget(bars: bars));
+      children.add(GraphBarWidget(bars: bars, prefixValue: "R\$", value: totalExpense * -1));
     }
 
     return children;
