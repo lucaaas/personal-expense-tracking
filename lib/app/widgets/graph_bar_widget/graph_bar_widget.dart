@@ -129,7 +129,7 @@ class _GraphWidget extends StatelessWidget {
           (index) => Positioned(
             left: getPosition(index, maxWidth, total),
             bottom: 0,
-            width: maxWidth * (bars[index].value) / total,
+            width: getBarWidth(bars[index], maxWidth, total),
             child: SizedBox(
               height: bars[index] == selectedBar ? 30 : 20,
               width: double.infinity,
@@ -154,13 +154,15 @@ class _GraphWidget extends StatelessWidget {
 
     if (index > 0) {
       for (int i = 0; i < index; i++) {
-        position += (maxWidth * (bars[index].value) / total);
+        position += getBarWidth(bars[i], maxWidth, total);
       }
-
-      position = maxWidth - position;
     }
 
     return position;
+  }
+
+  double getBarWidth(BarInfo bar, double maxWidth, double total) {
+    return maxWidth * (bar.value) / total;
   }
 }
 
