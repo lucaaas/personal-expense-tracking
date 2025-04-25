@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:personal_expense_tracker/app/helpers/format_to_money_string_helper.dart';
 import 'package:personal_expense_tracker/app/providers/transaction_provider.dart';
 import 'package:personal_expense_tracker/app/widgets/card_widget/card_widget.dart';
 import 'package:personal_expense_tracker/app/widgets/graph_bar_widget/graph_bar_widget.dart';
@@ -23,16 +22,20 @@ class CreditCardsExpenseWidget extends StatelessWidget {
 
   List<Widget> _buildChildren() {
     List<Widget> children = [];
+    List<BarInfo> bars = [];
 
     for (CreditCardMonthInfo info in creditCardInfos) {
-      children.add(
-        GraphBarWidget(
-          percentage: info.totalExpense / totalExpense,
+      if (info.totalExpense != 0) {
+        bars.add(BarInfo(
           color: info.creditCard.colorValue,
-          value: formatToMoneyString(info.totalExpense),
-          title: info.creditCard.name,
-        ),
-      );
+          value: info.totalExpense * -1,
+          label: info.creditCard.name,
+        ));
+      }
+    }
+
+    if (bars.isNotEmpty) {
+      children.add(GraphBarWidget(bars: bars));
     }
 
     return children;
