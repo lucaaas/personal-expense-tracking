@@ -3,17 +3,22 @@ import 'package:personal_expense_tracker/app/providers/transaction_provider.dart
 import 'package:personal_expense_tracker/app/widgets/card_widget/card_widget.dart';
 import 'package:personal_expense_tracker/app/widgets/graph_bar_widget/graph_bar_widget.dart';
 
-class CategoryExpenseWidget extends StatelessWidget {
-  final List<CategoryMonthInfo> categoriesInfo;
+class MonthExpenseWidget extends StatelessWidget {
+  final List<MonthInfo> info;
   final double totalExpense;
+  final String title;
 
-  const CategoryExpenseWidget(
-      {super.key, required this.categoriesInfo, required this.totalExpense});
+  const MonthExpenseWidget({
+    super.key,
+    required this.info,
+    required this.totalExpense,
+    this.title = "Despesas",
+  });
 
   @override
   Widget build(BuildContext context) {
     return CardWidget(
-      title: const Text("Despesas por categoria"),
+      title: Text(title),
       child: Column(
         children: _buildChildren(),
       ),
@@ -24,13 +29,13 @@ class CategoryExpenseWidget extends StatelessWidget {
     List<Widget> children = [];
     List<BarInfo> bars = [];
 
-    for (CategoryMonthInfo info in categoriesInfo) {
+    for (MonthInfo info in info) {
       if (info.totalExpense != 0) {
         bars.add(
           BarInfo(
-            color: info.category.colorValue,
+            color: info.data.colorValue,
             value: info.totalExpense * -1,
-            label: info.category.name,
+            label: info.data.name,
           ),
         );
       }
