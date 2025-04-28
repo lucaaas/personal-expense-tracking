@@ -5,10 +5,13 @@ import 'package:personal_expense_tracker/app/models/category_model.dart';
 import 'package:personal_expense_tracker/app/models/credit_card_model.dart';
 import 'package:personal_expense_tracker/app/models/transaction_model.dart';
 
-abstract class MonthInfo {
+class MonthInfo<T> {
   double totalExpense = 0;
   double totalIncome = 0;
   double balance = 0;
+  final T data;
+
+  MonthInfo({required this.data});
 
   void addToTotal(double value) {
     if (value > 0) {
@@ -31,22 +34,10 @@ abstract class MonthInfo {
   }
 }
 
-class CategoryMonthInfo extends MonthInfo {
-  final CategoryModel category;
-
-  CategoryMonthInfo({required this.category});
-}
-
-class CreditCardMonthInfo extends MonthInfo {
-  final CreditCardModel creditCard;
-
-  CreditCardMonthInfo({required this.creditCard});
-}
-
 class TransactionCache {
   late List<TransactionModel> transactions;
   late TransactionModel previousMonthBalance;
-  final List<CreditCardMonthInfo> _creditCardInfos = [];
+  final List<MonthInfo<CreditCardModel>> _creditCardInfos = [];
   bool isCached;
   double totalIncome = 0;
   double totalExpense = 0;
@@ -68,19 +59,19 @@ class TransactionCache {
     addTransaction(previousMonthBalance);
   }
 
-  List<CreditCardMonthInfo> get creditCardInfos => List.from(_creditCardInfos);
+  List<MonthInfo<CreditCardModel>> get creditCardInfos => List.from(_creditCardInfos);
 
-  List<CategoryMonthInfo> get categoriesInfo {
-    List<CategoryMonthInfo> categoryInfos = [];
+  List<MonthInfo<CategoryModel>> get categoriesInfo {
+    List<MonthInfo<CategoryModel>> categoryInfos = [];
 
     for (TransactionModel transaction in transactions) {
       if (transaction.categories.isNotEmpty) {
         for (CategoryModel category in transaction.categories) {
-          CategoryMonthInfo categoryInfo;
+          MonthInfo<CategoryModel> categoryInfo;
           try {
-            categoryInfo = categoryInfos.firstWhere((info) => info.category == category);
+            categoryInfo = categoryInfos.firstWhere((info) => info.data == category);
           } on StateError catch (_) {
-            categoryInfo = CategoryMonthInfo(category: category);
+            categoryInfo = MonthInfo(data: category);
             categoryInfos.add(categoryInfo);
           }
 
@@ -94,7 +85,7 @@ class TransactionCache {
 
   double get totalCreditCardExpense {
     double total = 0;
-    for (CreditCardMonthInfo info in _creditCardInfos) {
+    for (MonthInfo info in _creditCardInfos) {
       total += info.totalExpense;
     }
     return total;
@@ -106,12 +97,11 @@ class TransactionCache {
     _sumTotals(transaction);
 
     if (transaction.creditCard != null) {
-      CreditCardMonthInfo creditCardInfo;
+      MonthInfo<CreditCardModel> creditCardInfo;
       try {
-        creditCardInfo =
-            _creditCardInfos.firstWhere((info) => info.creditCard == transaction.creditCard);
+        creditCardInfo = _creditCardInfos.firstWhere((info) => info.data == transaction.creditCard);
       } on StateError catch (_) {
-        creditCardInfo = CreditCardMonthInfo(creditCard: transaction.creditCard!);
+        creditCardInfo = MonthInfo(data: transaction.creditCard!);
         _creditCardInfos.add(creditCardInfo);
       }
 
@@ -129,8 +119,8 @@ class TransactionCache {
     }
 
     if (transaction.creditCard != null) {
-      CreditCardMonthInfo creditCardInfo =
-          _creditCardInfos.firstWhere((info) => info.creditCard == transaction.creditCard);
+      MonthInfo<CreditCardModel> creditCardInfo =
+          _creditCardInfos.firstWhere((info) => info.data == transaction.creditCard);
 
       creditCardInfo.subtractFromTotal(transaction.value);
     }
