@@ -241,9 +241,11 @@ class TransactionProvider with ChangeNotifier {
       for (TransactionModel transaction in transactions) {
         _addToGroupedTransactions(transaction);
       }
-    } else {
-      DateTime now = DateTime.now();
-      String key = _getKeyFromDate(now);
+    }
+
+    DateTime now = DateTime.now();
+    String key = _getKeyFromDate(now);
+    if (transactions.isEmpty || !_groupedTransactions.keys.contains(key)) {
       _groupedTransactions[key] = TransactionCache(previousMonth: DateTime(now.year, now.month));
     }
 
