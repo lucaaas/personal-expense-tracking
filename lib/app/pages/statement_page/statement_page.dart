@@ -6,7 +6,7 @@ import 'package:personal_expense_tracker/app/pages/statement_page/widgets/month_
 import 'package:personal_expense_tracker/app/pages/statement_page/widgets/transaction_list/transaction_list.dart';
 import 'package:personal_expense_tracker/app/providers/transaction_provider.dart';
 import 'package:personal_expense_tracker/app/utils/app_routes.dart';
-import 'package:personal_expense_tracker/app/widgets/tabbar_widget/tabbar_widget.dart';
+import 'package:personal_expense_tracker/app/widgets/floating_tabbar_widget/floating_tabbar_widget.dart';
 import 'package:provider/provider.dart';
 
 class StatementPage extends StatefulWidget {
@@ -48,8 +48,8 @@ class _StatementPageState extends State<StatementPage> {
             builder: (context, provider, child) => SliverPersistentHeader(
               pinned: true,
               delegate: _HeaderDelegate(
-                tabBar: TabBarWidget(
-                  items: provider.months.map((month) => TabBarItem(title: month)).toList(),
+                tabBar: FloatingTabBarWidget(
+                  items: provider.months.map((month) => FloatingTabBarItem(title: month)).toList(),
                   selectedIndex: _index,
                   onTabChanged: _changeTab,
                 ),
@@ -176,7 +176,7 @@ class _StatementPageState extends State<StatementPage> {
 }
 
 class _HeaderDelegate extends SliverPersistentHeaderDelegate {
-  final TabBarWidget tabBar;
+  final FloatingTabBarWidget tabBar;
 
   _HeaderDelegate({required this.tabBar});
 

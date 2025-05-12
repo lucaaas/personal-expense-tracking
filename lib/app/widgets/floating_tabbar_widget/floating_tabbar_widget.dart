@@ -1,11 +1,11 @@
 import 'package:flutter/cupertino.dart';
 
-class TabBarWidget extends StatefulWidget {
-  final List<TabBarItem> items;
+class FloatingTabBarWidget extends StatefulWidget {
+  final List<FloatingTabBarItem> items;
   final int selectedIndex;
   final void Function(int)? onTabChanged;
 
-  const TabBarWidget({
+  const FloatingTabBarWidget({
     super.key,
     required this.items,
     this.selectedIndex = 0,
@@ -13,23 +13,25 @@ class TabBarWidget extends StatefulWidget {
   });
 
   @override
-  State<TabBarWidget> createState() => _TabBarWidgetState();
+  State<FloatingTabBarWidget> createState() => _FloatingTabBarWidgetState();
 }
 
-class _TabBarWidgetState extends State<TabBarWidget> {
+class _FloatingTabBarWidgetState extends State<FloatingTabBarWidget> {
   final ScrollController _scrollController = ScrollController();
 
   @override
-  void didUpdateWidget(covariant TabBarWidget oldWidget) {
+  void didUpdateWidget(covariant FloatingTabBarWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
-    _scrollController.animateTo(_scrollOffset, duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
+    _scrollController.animateTo(_scrollOffset,
+        duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
   }
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _scrollController.animateTo(_scrollOffset, duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
+      _scrollController.animateTo(_scrollOffset,
+          duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
     });
   }
 
@@ -99,15 +101,15 @@ class _TabBarWidgetState extends State<TabBarWidget> {
   }
 }
 
-class TabBarItem {
+class FloatingTabBarItem {
   final String? title;
   final IconData? icon;
 
-  const TabBarItem({this.title, this.icon}) : assert(title != null || icon != null);
+  const FloatingTabBarItem({this.title, this.icon}) : assert(title != null || icon != null);
 }
 
 class _TabBarItemWidget extends StatelessWidget {
-  final TabBarItem item;
+  final FloatingTabBarItem item;
   final bool isSelected;
   final double? itemWidth;
   late final EdgeInsets _padding;
@@ -138,9 +140,10 @@ class _TabBarItemWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildItemsBar(BuildContext context, TabBarItem item) {
-    Color color =
-        isSelected ? CupertinoTheme.of(context).primaryContrastingColor : CupertinoTheme.of(context).primaryColor;
+  Widget _buildItemsBar(BuildContext context, FloatingTabBarItem item) {
+    Color color = isSelected
+        ? CupertinoTheme.of(context).primaryContrastingColor
+        : CupertinoTheme.of(context).primaryColor;
 
     if (item.title != null && item.icon != null) {
       return Column(
