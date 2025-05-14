@@ -5,8 +5,8 @@ import 'package:personal_expense_tracker/app/models/transaction_model.dart';
 import 'package:personal_expense_tracker/app/pages/statement_page/widgets/month_resume/month_resume.dart';
 import 'package:personal_expense_tracker/app/pages/statement_page/widgets/transaction_list/transaction_list.dart';
 import 'package:personal_expense_tracker/app/providers/transaction_provider.dart';
-import 'package:personal_expense_tracker/app/utils/app_routes.dart';
 import 'package:personal_expense_tracker/app/widgets/floating_tabbar_widget/floating_tabbar_widget.dart';
+import 'package:personal_expense_tracker/app/widgets/page_scaffold_widget/page_scaffold_widget.dart';
 import 'package:provider/provider.dart';
 
 class StatementPage extends StatefulWidget {
@@ -30,17 +30,10 @@ class _StatementPageState extends State<StatementPage> {
 
   @override
   Widget build(BuildContext context) {
-    return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
-        middle: const Text("Extrato"),
-        trailing: CupertinoButton(
-          onPressed: _addTransaction,
-          padding: EdgeInsets.zero,
-          child: Icon(
-            CupertinoIcons.add,
-            color: CupertinoTheme.of(context).primaryContrastingColor,
-          ),
-        ),
+    return PageScaffoldWidget(
+      contentPadding: const EdgeInsets.all(0),
+      navigationBar: const CupertinoNavigationBar(
+        middle: Text("Extrato"),
       ),
       child: CustomScrollView(
         slivers: [
@@ -67,10 +60,6 @@ class _StatementPageState extends State<StatementPage> {
         ],
       ),
     );
-  }
-
-  void _addTransaction() {
-    Navigator.of(context).pushNamed(AppRoutes.TRANSACTION_FORM);
   }
 
   Future<void> _load() async {
