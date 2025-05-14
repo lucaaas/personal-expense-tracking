@@ -3,4 +3,5 @@ class AppRoutes {
   static const HOME = '/home';
   static const TRANSACTION_FORM = '/transaction-form';
   static const STATEMENT = '/statement';
+  static const TAB = '/tab';
 }

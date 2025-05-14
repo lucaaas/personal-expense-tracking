@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:personal_expense_tracker/app/helpers/db_helper.dart';
 import 'package:personal_expense_tracker/app/providers/transaction_provider.dart';
+import 'package:personal_expense_tracker/app/utils/app_routes.dart';
 import 'package:provider/provider.dart';
 
 class LoadingPage extends StatelessWidget {
@@ -12,7 +13,7 @@ class LoadingPage extends StatelessWidget {
     Future.delayed(const Duration(seconds: 3), () async {
       if (context.mounted) {
         await Provider.of<TransactionProvider>(context, listen: false).init();
-        Navigator.of(context).pushReplacementNamed('/home');
+        Navigator.of(context).pushReplacementNamed(AppRoutes.TAB);
       }
     });
   }
