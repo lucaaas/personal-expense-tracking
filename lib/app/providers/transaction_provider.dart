@@ -1,11 +1,43 @@
 import 'dart:collection';
 
 import 'package:flutter/cupertino.dart';
+import 'package:personal_expense_tracker/app/models/category_model.dart';
+import 'package:personal_expense_tracker/app/models/credit_card_model.dart';
 import 'package:personal_expense_tracker/app/models/transaction_model.dart';
+
+class MonthInfo<T> {
+  double totalExpense = 0;
+  double totalIncome = 0;
+  double balance = 0;
+  final T data;
+
+  MonthInfo({required this.data});
+
+  void addToTotal(double value) {
+    if (value > 0) {
+      totalIncome += value;
+    } else {
+      totalExpense += value;
+    }
+
+    balance = totalIncome + totalExpense;
+  }
+
+  void subtractFromTotal(double value) {
+    if (value > 0) {
+      totalIncome -= value;
+    } else {
+      totalExpense -= value;
+    }
+
+    balance = totalIncome + totalExpense;
+  }
+}
 
 class TransactionCache {
   late List<TransactionModel> transactions;
   late TransactionModel previousMonthBalance;
+  final List<MonthInfo<CreditCardModel>> _creditCardInfos = [];
   bool isCached;
   double totalIncome = 0;
   double totalExpense = 0;
@@ -27,10 +59,54 @@ class TransactionCache {
     addTransaction(previousMonthBalance);
   }
 
+  List<MonthInfo<CreditCardModel>> get creditCardInfos => List.from(_creditCardInfos);
+
+  List<MonthInfo<CategoryModel>> get categoriesInfo {
+    List<MonthInfo<CategoryModel>> categoryInfos = [];
+
+    for (TransactionModel transaction in transactions) {
+      if (transaction.categories.isNotEmpty) {
+        for (CategoryModel category in transaction.categories) {
+          MonthInfo<CategoryModel> categoryInfo;
+          try {
+            categoryInfo = categoryInfos.firstWhere((info) => info.data == category);
+          } on StateError catch (_) {
+            categoryInfo = MonthInfo(data: category);
+            categoryInfos.add(categoryInfo);
+          }
+
+          categoryInfo.addToTotal(transaction.value);
+        }
+      }
+    }
+
+    return categoryInfos;
+  }
+
+  double get totalCreditCardExpense {
+    double total = 0;
+    for (MonthInfo info in _creditCardInfos) {
+      total += info.totalExpense;
+    }
+    return total;
+  }
+
   void addTransaction(TransactionModel transaction) {
     transactions.add(transaction);
     _sortTransactions();
     _sumTotals(transaction);
+
+    if (transaction.creditCard != null) {
+      MonthInfo<CreditCardModel> creditCardInfo;
+      try {
+        creditCardInfo = _creditCardInfos.firstWhere((info) => info.data == transaction.creditCard);
+      } on StateError catch (_) {
+        creditCardInfo = MonthInfo(data: transaction.creditCard!);
+        _creditCardInfos.add(creditCardInfo);
+      }
+
+      creditCardInfo.addToTotal(transaction.value);
+    }
   }
 
   void removeTransaction(TransactionModel transaction) {
@@ -40,6 +116,13 @@ class TransactionCache {
       totalIncome -= transaction.value;
     } else {
       totalExpense -= transaction.value;
+    }
+
+    if (transaction.creditCard != null) {
+      MonthInfo<CreditCardModel> creditCardInfo =
+          _creditCardInfos.firstWhere((info) => info.data == transaction.creditCard);
+
+      creditCardInfo.subtractFromTotal(transaction.value);
     }
 
     balance = totalIncome + totalExpense;
@@ -158,9 +241,11 @@ class TransactionProvider with ChangeNotifier {
       for (TransactionModel transaction in transactions) {
         _addToGroupedTransactions(transaction);
       }
-    } else {
-      DateTime now = DateTime.now();
-      String key = _getKeyFromDate(now);
+    }
+
+    DateTime now = DateTime.now();
+    String key = _getKeyFromDate(now);
+    if (transactions.isEmpty || !_groupedTransactions.keys.contains(key)) {
       _groupedTransactions[key] = TransactionCache(previousMonth: DateTime(now.year, now.month));
     }
 

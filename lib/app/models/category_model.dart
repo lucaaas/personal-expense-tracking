@@ -8,7 +8,8 @@ class CategoryModel extends BaseModel<CategoryModel> {
   String color;
   String? description;
 
-  CategoryModel({super.id, super.createdAt, required this.name, this.color = "0xFFFF9700", this.description});
+  CategoryModel(
+      {super.id, super.createdAt, required this.name, this.color = "0xFFFF9700", this.description});
 
   CategoryModel.fromMap(Map<String, dynamic> data)
       : name = data["name"],
@@ -31,6 +32,11 @@ class CategoryModel extends BaseModel<CategoryModel> {
 
   @override
   String get table => "category";
+
+  @override
+  bool operator ==(Object other) {
+    return other is CategoryModel && other.id == id;
+  }
 
   @override
   Map<String, dynamic> toMap() {
