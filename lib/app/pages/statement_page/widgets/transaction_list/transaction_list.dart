@@ -8,8 +8,14 @@ import 'package:personal_expense_tracker/app/widgets/credit_card_label/credit_ca
 class TransactionList extends StatelessWidget {
   final List<TransactionModel> transactions;
   final Future<void> Function(TransactionModel) onTransactionDelete;
+  final Future<bool> Function(TransactionModel)? confirmDismiss;
 
-  const TransactionList({super.key, required this.transactions, required this.onTransactionDelete});
+  const TransactionList({
+    super.key,
+    required this.transactions,
+    required this.onTransactionDelete,
+    this.confirmDismiss,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +40,7 @@ class TransactionList extends StatelessWidget {
       title: Text(transaction.description),
       subtitle: Text(formattedDate),
       trailing: _getAmountWidget(transaction.value),
+      confirmDismiss: (_) => _confirmDismiss(transaction),
       onDismissed: (_) => onTransactionDelete(transaction),
       background: Container(
         color: CupertinoColors.systemRed.withOpacity(0.5),
@@ -64,6 +71,14 @@ class TransactionList extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Future<bool> _confirmDismiss(TransactionModel transaction) async {
+    if (confirmDismiss != null) {
+      return confirmDismiss!(transaction);
+    } else {
+      return true;
+    }
   }
 
   Widget _getAmountWidget(double value) {
