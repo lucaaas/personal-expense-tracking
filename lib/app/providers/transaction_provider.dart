@@ -110,22 +110,26 @@ class TransactionCache {
   }
 
   void removeTransaction(TransactionModel transaction) {
-    transactions.remove(transaction);
+    if (transaction != previousMonthBalance) {
+      transactions.remove(transaction);
 
-    if (transaction.value > 0) {
-      totalIncome -= transaction.value;
+      if (transaction.value > 0) {
+        totalIncome -= transaction.value;
+      } else {
+        totalExpense -= transaction.value;
+      }
+
+      if (transaction.creditCard != null) {
+        MonthInfo<CreditCardModel> creditCardInfo =
+            _creditCardInfos.firstWhere((info) => info.data == transaction.creditCard);
+
+        creditCardInfo.subtractFromTotal(transaction.value);
+      }
+
+      balance = totalIncome + totalExpense;
     } else {
-      totalExpense -= transaction.value;
+      throw ("Cannot remove previous month balance");
     }
-
-    if (transaction.creditCard != null) {
-      MonthInfo<CreditCardModel> creditCardInfo =
-          _creditCardInfos.firstWhere((info) => info.data == transaction.creditCard);
-
-      creditCardInfo.subtractFromTotal(transaction.value);
-    }
-
-    balance = totalIncome + totalExpense;
   }
 
   void addAllTransactions(List<TransactionModel> transactions) {
@@ -138,7 +142,7 @@ class TransactionCache {
   }
 
   void updatePreviousMonthBalance(double value) {
-    removeTransaction(previousMonthBalance);
+    transactions.remove(previousMonthBalance);
     previousMonthBalance.value = value;
     addTransaction(previousMonthBalance);
   }
@@ -181,6 +185,11 @@ class TransactionProvider with ChangeNotifier {
 
     await transaction.delete();
     notifyListeners();
+  }
+
+  bool canDeleteTransaction(TransactionModel transaction) {
+    String key = _getKeyFromDate(transaction.date!);
+    return transaction != _groupedTransactions[key]!.previousMonthBalance;
   }
 
   Future<TransactionCache> getTransactionsByMonthYear(String monthYear) async {
