@@ -132,35 +132,42 @@ class _StatementPageState extends State<StatementPage> {
   }
 
   Future<void> _deleteTransaction(TransactionModel transaction) async {
-    TransactionProvider provider = Provider.of<TransactionProvider>(context, listen: false);
-    await provider.deleteTransaction(transaction);
+    try {
+      TransactionProvider provider = Provider.of<TransactionProvider>(context, listen: false);
+      await provider.deleteTransaction(transaction);
 
-    const Duration duration = Duration(seconds: 5);
-    SnackBarHelper.show(
-      context: context,
-      duration: duration,
-      message: "Transação excluída",
-      leading: TweenAnimationBuilder<double>(
-        tween: Tween(begin: 1, end: 0),
+      const Duration duration = Duration(seconds: 5);
+      SnackBarHelper.show(
+        context: context,
         duration: duration,
-        builder: (context, value, child) => CircularProgressIndicator(
-          value: value,
-          strokeWidth: 6,
-          color: CupertinoTheme.of(context).primaryContrastingColor,
-        ),
-      ),
-      trailing: CupertinoButton(
-        child: Text(
-          "Desfazer",
-          style: TextStyle(
-            fontSize: 16,
+        message: "Transação excluída",
+        leading: TweenAnimationBuilder<double>(
+          tween: Tween(begin: 1, end: 0),
+          duration: duration,
+          builder: (context, value, child) => CircularProgressIndicator(
+            value: value,
+            strokeWidth: 6,
             color: CupertinoTheme.of(context).primaryContrastingColor,
-            fontWeight: FontWeight.bold,
           ),
         ),
-        onPressed: () => provider.undoDeleteTransaction(),
-      ),
-    );
+        trailing: CupertinoButton(
+          child: Text(
+            "Desfazer",
+            style: TextStyle(
+              fontSize: 16,
+              color: CupertinoTheme.of(context).primaryContrastingColor,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          onPressed: () {
+            provider.undoDeleteTransaction();
+            SnackBarHelper.remove();
+          },
+        ),
+      );
+    } catch (e) {
+      return;
+    }
   }
 }
 

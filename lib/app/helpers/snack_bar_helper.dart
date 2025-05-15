@@ -1,6 +1,16 @@
 import 'package:flutter/cupertino.dart';
 
 class SnackBarHelper {
+  static OverlayEntry? _overlay;
+  static SnackBarHelper? _instance;
+
+  SnackBarHelper._();
+
+  factory SnackBarHelper() {
+    _instance ??= SnackBarHelper._();
+    return _instance!;
+  }
+
   static void show({
     required BuildContext context,
     required String message,
@@ -8,7 +18,7 @@ class SnackBarHelper {
     Widget? leading,
     Widget? trailing,
   }) {
-    final overlay = OverlayEntry(
+    _overlay = OverlayEntry(
       builder: (context) => Positioned(
         bottom: 0,
         child: Container(
@@ -29,77 +39,14 @@ class SnackBarHelper {
       ),
     );
 
-    Overlay.of(context).insert(overlay);
-    Future.delayed(duration, () => overlay.remove());
+    Overlay.of(context).insert(_overlay!);
+    Future.delayed(duration, () => _overlay!.remove());
+  }
+
+  static void remove() {
+    if (_overlay != null) {
+      _overlay!.remove();
+      _overlay = null;
+    }
   }
 }
-
-// class _SnackbarWidget extends StatefulWidget {
-//   final Widget? leading;
-//   final String message;
-//   final Widget? trailing;
-//   final Duration duration;
-//   final bool showCircularProgress;
-//
-//   const _SnackbarWidget({
-//     super.key,
-//     this.leading,
-//     required this.message,
-//     this.trailing,
-//     required this.duration,
-//     this.showCircularProgress = false,
-//   }) : assert((showCircularProgress || leading == null),
-//             'showCircularProgress can only be true if leading is null');
-//
-//   @override
-//   State<_SnackbarWidget> createState() => _SnackbarWidgetState();
-// }
-//
-// class _SnackbarWidgetState extends State<_SnackbarWidget> {
-//   int _timerToDelete = 0;
-//
-//   @override
-//   void initState() {
-//     super.initState();
-//   }
-//
-//   void _updateTimer() {
-//     _timerToDelete = widget.duration.inSeconds;
-//
-//     Future.doWhile(() {
-//       Future.delayed(const Duration(seconds: 1), () => setState(() => _timerToDelete--));
-//       return _timerToDelete > 0;
-//     });
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     if (widget.showCircularProgress) {
-//       _updateTimer();
-//     }
-//
-//     return Positioned(
-//       bottom: 0,
-//       child: Container(
-//         width: MediaQuery.of(context).size.width,
-//         padding: const EdgeInsets.all(8),
-//         decoration: BoxDecoration(
-//           color: CupertinoTheme.of(context).primaryColor,
-//         ),
-//         child: Row(
-//           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//           children: [
-//             if (widget.showCircularProgress)
-//               CircularProgressIndicator(
-//                 color: CupertinoTheme.of(context).primaryContrastingColor,
-//                 value: 1 / _timerToDelete,
-//               ),
-//             if (widget.leading != null) widget.leading!,
-//             Text(widget.message, style: const TextStyle(fontSize: 16)),
-//             if (widget.trailing != null) widget.trailing!,
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
