@@ -143,7 +143,15 @@ class TransactionCache {
 
   void updatePreviousMonthBalance(double value) {
     transactions.remove(previousMonthBalance);
+
+    if (value > 0) {
+      totalIncome -= value;
+    } else {
+      totalExpense -= value;
+    }
+
     previousMonthBalance.value = value;
+
     addTransaction(previousMonthBalance);
   }
 
@@ -184,6 +192,7 @@ class TransactionProvider with ChangeNotifier {
     _updateBalance();
 
     await transaction.delete();
+    _lastDeletedTransaction!.id = null;
     notifyListeners();
   }
 
