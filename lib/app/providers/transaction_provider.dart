@@ -5,15 +5,27 @@ import 'package:personal_expense_tracker/app/models/category_model.dart';
 import 'package:personal_expense_tracker/app/models/credit_card_model.dart';
 import 'package:personal_expense_tracker/app/models/transaction_model.dart';
 
+/// Represents monthly information for a generic type [T].
 class MonthInfo<T> {
+  /// Total expenses for the month (always <= 0).
   double totalExpense = 0;
+
+  /// Total income for the month.
   double totalIncome = 0;
+
+  /// Data associated with the month (e.g., category or credit card).
   final T data;
 
+  /// Creates a [MonthInfo] instance with the provided [data].
   MonthInfo({required this.data});
 
+  /// Returns the total balance (income + expenses).
   double get balance => totalIncome + totalExpense;
 
+  /// Adds a value to the total income or expenses.
+  ///
+  /// If the [value] is positive, it is added to the income.
+  /// If the [value] is negative, it is added to the expenses.
   void addToTotal(double value) {
     if (value > 0) {
       totalIncome += value;
@@ -22,6 +34,10 @@ class MonthInfo<T> {
     }
   }
 
+  /// Subtracts a value from the total income or expenses.
+  ///
+  /// If the [value] is positive, it is subtracted from the income.
+  /// If the [value] is negative, it is subtracted from the expenses.
   void subtractFromTotal(double value) {
     if (value > 0) {
       totalIncome -= value;
@@ -31,14 +47,30 @@ class MonthInfo<T> {
   }
 }
 
+/// Manages a cache of transactions and related information.
 class TransactionCache {
+  /// List of transactions stored in the cache.
   late List<TransactionModel> transactions;
+
+  /// Represents the balance from the previous month.
   late TransactionModel previousMonthBalance;
+
+  /// List of monthly information related to credit cards.
   final List<MonthInfo<CreditCardModel>> _creditCardInfos = [];
+
+  /// Indicates whether the cache is loaded.
   bool isCached;
+
+  /// Total income in the cache.
   double totalIncome = 0;
+
+  /// Total expenses in the cache.
   double totalExpense = 0;
 
+  /// Creates a [TransactionCache] with the provided [previousMonth] and [transactions].
+  ///
+  /// The [previousMonth] is the date of the previous month.
+  /// The [transactions] is the list of transactions to be added to the cache.
   TransactionCache({
     required DateTime previousMonth,
     List<TransactionModel> transactions = const [],
@@ -55,10 +87,13 @@ class TransactionCache {
     addTransaction(previousMonthBalance);
   }
 
+  /// Returns the total balance (income + expenses).
   double get balance => totalIncome + totalExpense;
 
+  /// Returns a copy of the list of credit card information.
   List<MonthInfo<CreditCardModel>> get creditCardInfos => List.from(_creditCardInfos);
 
+  /// Returns a list of monthly information related to categories.
   List<MonthInfo<CategoryModel>> get categoriesInfo {
     List<MonthInfo<CategoryModel>> categoryInfos = [];
 
@@ -81,6 +116,7 @@ class TransactionCache {
     return categoryInfos;
   }
 
+  /// Calculates the total expenses related to credit cards.
   double get totalCreditCardExpense {
     double total = 0;
     for (MonthInfo info in _creditCardInfos) {
@@ -89,6 +125,9 @@ class TransactionCache {
     return total;
   }
 
+  /// Adds a transaction to the cache.
+  ///
+  /// Updates income, expenses, and credit card information.
   void addTransaction(TransactionModel transaction) {
     transactions.add(transaction);
     _sortTransactions();
@@ -107,6 +146,9 @@ class TransactionCache {
     }
   }
 
+  /// Removes a transaction from the cache.
+  ///
+  /// Throws an exception if the transaction is the previous month's balance.
   void removeTransaction(TransactionModel transaction) {
     if (transaction != previousMonthBalance) {
       transactions.remove(transaction);
@@ -128,6 +170,7 @@ class TransactionCache {
     }
   }
 
+  /// Adds a list of transactions to the cache.
   void addAllTransactions(List<TransactionModel> transactions) {
     this.transactions.addAll(transactions);
     _sortTransactions();
@@ -137,6 +180,7 @@ class TransactionCache {
     }
   }
 
+  /// Updates the previous month's balance with the provided [newValue].
   void updatePreviousMonthBalance(double newValue) {
     transactions.remove(previousMonthBalance);
 
@@ -151,6 +195,7 @@ class TransactionCache {
     addTransaction(previousMonthBalance);
   }
 
+  /// Updates income, expenses, and balance based on the provided [transaction].
   void _sumTotals(TransactionModel transaction) {
     if (transaction.value > 0) {
       totalIncome += transaction.value;
@@ -159,25 +204,36 @@ class TransactionCache {
     }
   }
 
+  /// Sorts transactions in descending order by date.
   void _sortTransactions() {
     transactions.sort((a, b) => b.date!.compareTo(a.date!));
   }
 }
 
+/// Provides transaction-related operations and state management.
 class TransactionProvider with ChangeNotifier {
+  /// Stores transactions grouped by month and year.
   late SplayTreeMap<String, TransactionCache> _groupedTransactions;
+
+  /// Stores the last deleted transaction for undo purposes.
   TransactionModel? _lastDeletedTransaction;
 
+  /// Returns a list of months (keys) in the grouped transactions.
   List<String> get months => _groupedTransactions.keys.toList();
 
+  /// Creates a [TransactionProvider] instance.
   TransactionProvider() {
     _groupedTransactions = SplayTreeMap(_compareKeys);
   }
 
+  /// Initializes the provider by grouping transactions.
   Future<void> init() async {
     await _groupTransactions();
   }
 
+  /// Deletes a transaction and updates the balance.
+  ///
+  /// The [transaction] is removed from the grouped transactions and deleted from storage.
   Future<void> deleteTransaction(TransactionModel transaction) async {
     _lastDeletedTransaction = transaction;
 
@@ -190,11 +246,17 @@ class TransactionProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  /// Checks if a transaction can be deleted.
+  ///
+  /// Returns `false` if the transaction is the previous month's balance.
   bool canDeleteTransaction(TransactionModel transaction) {
     String key = _getKeyFromDate(transaction.date!);
     return transaction != _groupedTransactions[key]!.previousMonthBalance;
   }
 
+  /// Retrieves transactions for a specific month and year.
+  ///
+  /// If the transactions are not cached, they are loaded from storage.
   Future<TransactionCache> getTransactionsByMonthYear(String monthYear) async {
     if (!_groupedTransactions[monthYear]!.isCached) {
       int month = int.parse(monthYear.split('/')[0]);
@@ -209,12 +271,14 @@ class TransactionProvider with ChangeNotifier {
     return _groupedTransactions[monthYear]!;
   }
 
+  /// Saves a transaction and updates the grouped transactions.
   Future<void> saveTransaction(TransactionModel transaction) async {
     await transaction.save();
     _addToGroupedTransactions(transaction);
     notifyListeners();
   }
 
+  /// Restores the last deleted transaction.
   Future<void> undoDeleteTransaction() async {
     if (_lastDeletedTransaction != null) {
       String key = _getKeyFromDate(_lastDeletedTransaction!.date!);
@@ -227,6 +291,7 @@ class TransactionProvider with ChangeNotifier {
     }
   }
 
+  /// Adds a transaction to the grouped transactions.
   void _addToGroupedTransactions(TransactionModel transaction) {
     String key = _getKeyFromDate(transaction.date!);
 
@@ -246,6 +311,7 @@ class TransactionProvider with ChangeNotifier {
     _updateBalance();
   }
 
+  /// Groups transactions by month and year.
   Future<void> _groupTransactions() async {
     final List<TransactionModel> transactions = await TransactionModel.list();
 
@@ -264,10 +330,12 @@ class TransactionProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  /// Generates a key in the format `MM/YYYY` from a [date].
   String _getKeyFromDate(DateTime date) {
     return '${date.month.toString().padLeft(2, '0')}/${date.year}';
   }
 
+  /// Updates the balance for all grouped transactions.
   void _updateBalance() {
     for (int i = 1; i < _groupedTransactions.keys.length; i++) {
       String key = _groupedTransactions.keys.elementAt(i);
@@ -276,6 +344,7 @@ class TransactionProvider with ChangeNotifier {
     }
   }
 
+  /// Compares two keys in the format `MM/YYYY`.
   int _compareKeys(String a, String b) {
     List<String> aParts = a.split('/');
     List<String> bParts = b.split('/');
