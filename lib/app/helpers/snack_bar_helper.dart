@@ -18,6 +18,10 @@ class SnackBarHelper {
     Widget? leading,
     Widget? trailing,
   }) {
+    if (_overlay != null) {
+      remove();
+    }
+
     _overlay = OverlayEntry(
       builder: (context) => Positioned(
         bottom: 0,
@@ -40,7 +44,7 @@ class SnackBarHelper {
     );
 
     Overlay.of(context).insert(_overlay!);
-    Future.delayed(duration, () => _overlay!.remove());
+    Future.delayed(duration, remove);
   }
 
   static void remove() {
