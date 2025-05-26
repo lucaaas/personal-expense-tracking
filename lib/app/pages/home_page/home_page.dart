@@ -46,26 +46,28 @@ class _HomePageState extends State<HomePage> {
     return PageScaffoldWidget(
       navigationBar: const CupertinoNavigationBar(),
       child: _currentMonthInfo != null
-          ? Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text("Saldo", style: TextStyle(fontSize: 24)),
-                Text(
-                  formatToMoneyString(_currentMonthInfo!.balance),
-                  style: const TextStyle(fontSize: 32, fontWeight: FontWeight.w600),
-                ),
-                MonthResumeWidget(currentMonthInfo: _currentMonthInfo!),
-                MonthExpenseWidget(
-                  info: _currentMonthInfo!.creditCardInfos,
-                  totalExpense: _currentMonthInfo!.totalCreditCardExpense,
-                  title: "Despesas por cartão de crédito",
-                ),
-                MonthExpenseWidget(
-                  info: _currentMonthInfo!.categoriesInfo,
-                  totalExpense: _currentMonthInfo!.totalExpense,
-                  title: "Despesas por categoria",
-                ),
-              ],
+          ? Consumer<TransactionProvider>(
+              builder: (context, value, child) => Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text("Saldo", style: TextStyle(fontSize: 24)),
+                  Text(
+                    formatToMoneyString(_currentMonthInfo!.balance),
+                    style: const TextStyle(fontSize: 32, fontWeight: FontWeight.w600),
+                  ),
+                  MonthResumeWidget(currentMonthInfo: _currentMonthInfo!),
+                  MonthExpenseWidget(
+                    info: _currentMonthInfo!.creditCardInfos,
+                    totalExpense: _currentMonthInfo!.totalCreditCardExpense,
+                    title: "Despesas por cartão de crédito",
+                  ),
+                  MonthExpenseWidget(
+                    info: _currentMonthInfo!.categoriesInfo,
+                    totalExpense: _currentMonthInfo!.totalExpense,
+                    title: "Despesas por categoria",
+                  ),
+                ],
+              ),
             )
           : const Center(child: CupertinoActivityIndicator()),
     );
