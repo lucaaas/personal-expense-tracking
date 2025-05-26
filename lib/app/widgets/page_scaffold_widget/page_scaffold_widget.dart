@@ -118,15 +118,12 @@ class _TabBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Positioned(
-      bottom: 0,
-      child: Container(
-        width: MediaQuery.of(context).size.width,
-        color: CupertinoTheme.of(context).primaryColor,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: tabBarItems,
-        ),
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      color: CupertinoTheme.of(context).primaryColor,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: tabBarItems,
       ),
     );
   }

@@ -124,6 +124,7 @@ class _StatementPageState extends State<StatementPage> {
     } else {
       widgets.add(TransactionList(
         transactions: _transaction!.transactions,
+        confirmDismiss: _confirmDismiss,
         onTransactionDelete: _deleteTransaction,
       ));
     }
@@ -131,36 +132,48 @@ class _StatementPageState extends State<StatementPage> {
     return widgets;
   }
 
-  Future<void> _deleteTransaction(TransactionModel transaction) async {
+  Future<bool> _confirmDismiss(TransactionModel transaction) async {
     TransactionProvider provider = Provider.of<TransactionProvider>(context, listen: false);
-    await provider.deleteTransaction(transaction);
+    return provider.canDeleteTransaction(transaction);
+  }
 
-    const Duration duration = Duration(seconds: 5);
-    SnackBarHelper.show(
-      context: context,
-      duration: duration,
-      message: "Transação excluída",
-      leading: TweenAnimationBuilder<double>(
-        tween: Tween(begin: 1, end: 0),
+  Future<void> _deleteTransaction(TransactionModel transaction) async {
+    try {
+      TransactionProvider provider = Provider.of<TransactionProvider>(context, listen: false);
+      await provider.deleteTransaction(transaction);
+
+      const Duration duration = Duration(seconds: 5);
+      SnackBarHelper.show(
+        context: context,
         duration: duration,
-        builder: (context, value, child) => CircularProgressIndicator(
-          value: value,
-          strokeWidth: 6,
-          color: CupertinoTheme.of(context).primaryContrastingColor,
-        ),
-      ),
-      trailing: CupertinoButton(
-        child: Text(
-          "Desfazer",
-          style: TextStyle(
-            fontSize: 16,
+        message: "Transação excluída",
+        leading: TweenAnimationBuilder<double>(
+          tween: Tween(begin: 1, end: 0),
+          duration: duration,
+          builder: (context, value, child) => CircularProgressIndicator(
+            value: value,
+            strokeWidth: 6,
             color: CupertinoTheme.of(context).primaryContrastingColor,
-            fontWeight: FontWeight.bold,
           ),
         ),
-        onPressed: () => provider.undoDeleteTransaction(),
-      ),
-    );
+        trailing: CupertinoButton(
+          child: Text(
+            "Desfazer",
+            style: TextStyle(
+              fontSize: 16,
+              color: CupertinoTheme.of(context).primaryContrastingColor,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          onPressed: () {
+            provider.undoDeleteTransaction();
+            SnackBarHelper.remove();
+          },
+        ),
+      );
+    } catch (e) {
+      return;
+    }
   }
 }
 
