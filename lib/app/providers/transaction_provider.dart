@@ -8,10 +8,11 @@ import 'package:personal_expense_tracker/app/models/transaction_model.dart';
 class MonthInfo<T> {
   double totalExpense = 0;
   double totalIncome = 0;
-  double balance = 0;
   final T data;
 
   MonthInfo({required this.data});
+
+  double get balance => totalIncome + totalExpense;
 
   void addToTotal(double value) {
     if (value > 0) {
@@ -19,8 +20,6 @@ class MonthInfo<T> {
     } else {
       totalExpense += value;
     }
-
-    balance = totalIncome + totalExpense;
   }
 
   void subtractFromTotal(double value) {
@@ -29,8 +28,6 @@ class MonthInfo<T> {
     } else {
       totalExpense -= value;
     }
-
-    balance = totalIncome + totalExpense;
   }
 }
 
@@ -41,7 +38,6 @@ class TransactionCache {
   bool isCached;
   double totalIncome = 0;
   double totalExpense = 0;
-  double balance = 0;
 
   TransactionCache({
     required DateTime previousMonth,
@@ -58,6 +54,8 @@ class TransactionCache {
 
     addTransaction(previousMonthBalance);
   }
+
+  double get balance => totalIncome + totalExpense;
 
   List<MonthInfo<CreditCardModel>> get creditCardInfos => List.from(_creditCardInfos);
 
@@ -125,8 +123,6 @@ class TransactionCache {
 
         creditCardInfo.subtractFromTotal(transaction.value);
       }
-
-      balance = totalIncome + totalExpense;
     } else {
       throw ("Cannot remove previous month balance");
     }
@@ -141,16 +137,16 @@ class TransactionCache {
     }
   }
 
-  void updatePreviousMonthBalance(double value) {
+  void updatePreviousMonthBalance(double newValue) {
     transactions.remove(previousMonthBalance);
 
-    if (value > 0) {
-      totalIncome -= value;
+    if (previousMonthBalance.value > 0) {
+      totalIncome -= previousMonthBalance.value;
     } else {
-      totalExpense -= value;
+      totalExpense -= previousMonthBalance.value;
     }
 
-    previousMonthBalance.value = value;
+    previousMonthBalance.value = newValue;
 
     addTransaction(previousMonthBalance);
   }
@@ -161,8 +157,6 @@ class TransactionCache {
     } else {
       totalExpense += transaction.value;
     }
-
-    balance = totalIncome + totalExpense;
   }
 
   void _sortTransactions() {
