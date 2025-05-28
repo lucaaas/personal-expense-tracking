@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:personal_expense_tracker/app/helpers/get_constrasting_text_color.dart';
 import 'package:personal_expense_tracker/app/models/transaction_model.dart';
+import 'package:personal_expense_tracker/app/utils/app_routes.dart';
 import 'package:personal_expense_tracker/app/widgets/card_widget/dismissible_card_widget.dart';
 import 'package:personal_expense_tracker/app/widgets/chip_widget/chip_widget.dart';
 import 'package:personal_expense_tracker/app/widgets/credit_card_label/credit_card_label.dart';
@@ -8,13 +9,13 @@ import 'package:personal_expense_tracker/app/widgets/credit_card_label/credit_ca
 class TransactionList extends StatelessWidget {
   final List<TransactionModel> transactions;
   final Future<void> Function(TransactionModel) onTransactionDelete;
-  final Future<bool> Function(TransactionModel)? confirmDismiss;
+  final Future<bool> Function(TransactionModel)? confirmModify;
 
   const TransactionList({
     super.key,
     required this.transactions,
     required this.onTransactionDelete,
-    this.confirmDismiss,
+    this.confirmModify,
   });
 
   @override
@@ -28,7 +29,7 @@ class TransactionList extends StatelessWidget {
     );
   }
 
-  Widget _buildItem(_, index) {
+  Widget _buildItem(BuildContext context, int index) {
     final transaction = transactions[index];
     final DateTime date = transaction.date!;
     final String formattedDate = '${date.day.toString().padLeft(2, '0')}/'
@@ -42,6 +43,7 @@ class TransactionList extends StatelessWidget {
       trailing: _getAmountWidget(transaction.value),
       confirmDismiss: (_) => _confirmDismiss(transaction),
       onDismissed: (_) => onTransactionDelete(transaction),
+      onTap: () => _editTransaction(context, transaction),
       background: Container(
         color: CupertinoColors.systemRed.withOpacity(0.5),
         padding: const EdgeInsets.only(right: 24),
@@ -74,10 +76,18 @@ class TransactionList extends StatelessWidget {
   }
 
   Future<bool> _confirmDismiss(TransactionModel transaction) async {
-    if (confirmDismiss != null) {
-      return confirmDismiss!(transaction);
+    if (confirmModify != null) {
+      return confirmModify!(transaction);
     } else {
       return true;
+    }
+  }
+
+  void _editTransaction(BuildContext context, TransactionModel transaction) async {
+    if (confirmModify != null && await confirmModify!(transaction)) {
+      if (context.mounted) {
+        Navigator.pushNamed(context, AppRoutes.TRANSACTION_FORM, arguments: transaction);
+      }
     }
   }
 
