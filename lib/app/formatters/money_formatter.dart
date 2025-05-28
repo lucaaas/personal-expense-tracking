@@ -6,7 +6,7 @@ class MoneyFormatter extends TextInputFormatter {
     String cleanText = newValue.text.replaceAll(RegExp(r'\D'), '');
     TextEditingValue formattedValue = const TextEditingValue();
 
-    if (cleanText.isEmpty) {
+    if (cleanText.isEmpty || cleanText == '000') {
       formattedValue = formattedValue.copyWith(text: '0,00');
     } else if (cleanText.length == 1) {
       formattedValue = formattedValue.copyWith(text: '0,0$cleanText');

@@ -18,7 +18,8 @@ mixin TransactionConnector on BaseConnector<TransactionModel> {
   }
 
   @override
-  Future<List<TransactionModel>> filter({String? where, List<Object>? whereArgs, int? limit, String? orderBy}) async {
+  Future<List<TransactionModel>> filter(
+      {String? where, List<Object>? whereArgs, int? limit, String? orderBy}) async {
     List<Map<String, dynamic>> resultQuery = await _helper.getData(
       table: joinTable,
       columns: joinColumns,
@@ -34,7 +35,7 @@ mixin TransactionConnector on BaseConnector<TransactionModel> {
 
   @override
   Future<int> insertOrUpdate(TransactionModel model) async {
-    int transactionId = model.id ?? await super.insertOrUpdate(model);
+    int transactionId = await super.insertOrUpdate(model);
 
     if (model.categories.isNotEmpty) {
       for (CategoryModel category in model.categories) {
@@ -51,7 +52,8 @@ mixin TransactionConnector on BaseConnector<TransactionModel> {
     return transactionId;
   }
 
-  Map<int, Map<String, dynamic>> _groupTransactionsQueryResult(List<Map<String, dynamic>> resultQuery) {
+  Map<int, Map<String, dynamic>> _groupTransactionsQueryResult(
+      List<Map<String, dynamic>> resultQuery) {
     Map<int, Map<String, dynamic>> transactions = {};
     for (Map<String, dynamic> result in resultQuery) {
       if (!transactions.containsKey(result['id'])) {

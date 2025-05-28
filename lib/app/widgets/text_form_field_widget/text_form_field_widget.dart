@@ -12,6 +12,7 @@ class TextFormFieldWidget extends CupertinoTextFormFieldRow {
     super.onSaved,
     super.onChanged,
     super.controller,
+    super.initialValue,
   }) : super(
           textAlign: TextAlign.end,
           prefix: Text(label),

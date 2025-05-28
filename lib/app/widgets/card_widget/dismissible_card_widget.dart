@@ -12,6 +12,7 @@ class DismissibleCardWidget extends CardWidget {
     super.icon,
     super.trailing,
     super.child,
+    super.onTap,
     super.key,
     this.background,
     this.confirmDismiss,

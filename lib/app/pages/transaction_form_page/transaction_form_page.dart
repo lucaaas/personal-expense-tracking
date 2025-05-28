@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:personal_expense_tracker/app/formatters/money_formatter.dart';
 import 'package:personal_expense_tracker/app/models/category_model.dart';
 import 'package:personal_expense_tracker/app/models/credit_card_model.dart';
+import 'package:personal_expense_tracker/app/models/transaction_model.dart';
 import 'package:personal_expense_tracker/app/pages/transaction_form_page/transaction_form_controller.dart';
 import 'package:personal_expense_tracker/app/validators/required_validator.dart';
 import 'package:personal_expense_tracker/app/widgets/category_selector_widget/category_selector_widget.dart';
@@ -18,13 +19,25 @@ class TransactionFormPage extends StatefulWidget {
 }
 
 class _TransactionFormPageState extends State<TransactionFormPage> {
-  final TransactionFormController _controller = TransactionFormController();
+  late TransactionFormController _controller;
   List<CategoryModel> categories = [];
   List<CreditCardModel> creditCards = [];
 
   @override
   void initState() {
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    TransactionModel? transaction;
+
+    if (ModalRoute.of(context)!.settings.arguments != null) {
+      transaction = ModalRoute.of(context)!.settings.arguments as TransactionModel;
+    }
+
+    _controller = TransactionFormController(transaction: transaction);
     _getData();
   }
 
@@ -41,8 +54,8 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      navigationBar: const CupertinoNavigationBar(
-        middle: Text('Nova transação'),
+      navigationBar: CupertinoNavigationBar(
+        middle: Text(_controller.titlePage),
       ),
       child: Form(
         key: _controller.formKey,
@@ -65,6 +78,7 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
               label: "Descrição",
               placeholder: "Descrição",
               validator: RequiredValidator().validate,
+              initialValue: _controller.transaction.description,
               onSaved: (newValue) => _controller.transaction.description = newValue!,
             ),
             TextFormFieldWidget(
@@ -73,6 +87,7 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
               keyboardType: TextInputType.number,
               validator: RequiredValidator().validate,
               inputFormatters: [MoneyFormatter()],
+              initialValue: _controller.initialFormattedValue,
               onSaved: (newValue) {
                 newValue = newValue!.replaceAll('.', '');
                 newValue = newValue.replaceAll(',', '.');
@@ -82,7 +97,7 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
             DatePickerFormFieldWidget(
               label: "data",
               validator: RequiredValidator().validate,
-              initialValue: DateTime.now(),
+              initialValue: _controller.transaction.date,
               onSaved: (date) => _controller.transaction.date = date,
             ),
             CreditCardSelectorWidget(

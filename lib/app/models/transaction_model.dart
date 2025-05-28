@@ -24,7 +24,9 @@ class TransactionModel extends BaseModel<TransactionModel> with TransactionConne
       : description = data['description'],
         value = data['value'],
         categories = [],
-        creditCard = data['credit_card'].keys.length > 0 ? CreditCardModel.fromMap(data['credit_card']) : null,
+        creditCard = data['credit_card'].keys.length > 0
+            ? CreditCardModel.fromMap(data['credit_card'])
+            : null,
         date = DateTime.tryParse(data['date']),
         super(id: data['id'], createdAt: DateTime.parse(data['createdAt'])) {
     for (Map<String, dynamic> category in data['categories']) {
@@ -44,15 +46,17 @@ class TransactionModel extends BaseModel<TransactionModel> with TransactionConne
   }
 
   static Future<List<DateTime>> getTransactionsDateRange() async {
-    List<DateTime> dates =  [];
+    List<DateTime> dates = [];
 
-    List<TransactionModel> firstTransaction = await TransactionModel.empty().filter(limit: 1, orderBy: 'date ASC');
+    List<TransactionModel> firstTransaction =
+        await TransactionModel.empty().filter(limit: 1, orderBy: 'date ASC');
 
     if (firstTransaction.isNotEmpty) {
       dates.add(firstTransaction.first.date!);
     }
 
-    List<TransactionModel> lastTransaction = await TransactionModel.empty().filter(limit: 1, orderBy: 'date DESC');
+    List<TransactionModel> lastTransaction =
+        await TransactionModel.empty().filter(limit: 1, orderBy: 'date DESC');
 
     if (lastTransaction.isNotEmpty) {
       dates.add(lastTransaction.first.date!);
