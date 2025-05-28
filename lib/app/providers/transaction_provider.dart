@@ -170,13 +170,25 @@ class TransactionCache {
     }
   }
 
+  /// Recalculates the totals for expenses, income, and credit card information.
+  ///
+  /// Clears the current lists of transactions and credit card infos, then
+  /// re-adds all transactions to ensure the totals are accurate.
+  void recalculateTotals() {
+    totalExpense = 0;
+    totalIncome = 0;
+
+    List<TransactionModel> transactions = List.from(this.transactions);
+    this.transactions.clear();
+    _creditCardInfos.clear();
+
+    addAllTransactions(transactions);
+  }
+
   /// Adds a list of transactions to the cache.
   void addAllTransactions(List<TransactionModel> transactions) {
-    this.transactions.addAll(transactions);
-    _sortTransactions();
-
     for (TransactionModel transaction in transactions) {
-      _sumTotals(transaction);
+      addTransaction(transaction);
     }
   }
 
@@ -246,10 +258,10 @@ class TransactionProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  /// Checks if a transaction can be deleted.
+  /// Checks if a transaction can be deleted or updated.
   ///
   /// Returns `false` if the transaction is the previous month's balance.
-  bool canDeleteTransaction(TransactionModel transaction) {
+  bool canModifyTransaction(TransactionModel transaction) {
     String key = _getKeyFromDate(transaction.date!);
     return transaction != _groupedTransactions[key]!.previousMonthBalance;
   }
@@ -305,6 +317,8 @@ class TransactionProvider with ChangeNotifier {
 
       if (!transactions.contains(transaction)) {
         _groupedTransactions[key]!.addTransaction(transaction);
+      } else {
+        _groupedTransactions[key]!.recalculateTotals();
       }
     }
 
