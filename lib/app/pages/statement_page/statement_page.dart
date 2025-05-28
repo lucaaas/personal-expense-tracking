@@ -124,7 +124,7 @@ class _StatementPageState extends State<StatementPage> {
     } else {
       widgets.add(TransactionList(
         transactions: _transaction!.transactions,
-        confirmDismiss: _confirmDismiss,
+        confirmModify: _confirmDismiss,
         onTransactionDelete: _deleteTransaction,
       ));
     }
@@ -134,7 +134,7 @@ class _StatementPageState extends State<StatementPage> {
 
   Future<bool> _confirmDismiss(TransactionModel transaction) async {
     TransactionProvider provider = Provider.of<TransactionProvider>(context, listen: false);
-    return provider.canDeleteTransaction(transaction);
+    return provider.canModifyTransaction(transaction);
   }
 
   Future<void> _deleteTransaction(TransactionModel transaction) async {
