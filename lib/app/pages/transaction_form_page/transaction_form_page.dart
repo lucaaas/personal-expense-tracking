@@ -12,7 +12,9 @@ import 'package:personal_expense_tracker/app/widgets/segmented_button_form_field
 import 'package:personal_expense_tracker/app/widgets/text_form_field_widget/text_form_field_widget.dart';
 
 class TransactionFormPage extends StatefulWidget {
-  const TransactionFormPage({super.key});
+  final TransactionModel? transaction;
+
+  const TransactionFormPage({super.key, this.transaction});
 
   @override
   State<TransactionFormPage> createState() => _TransactionFormPageState();
@@ -26,22 +28,11 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
   @override
   void initState() {
     super.initState();
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    TransactionModel? transaction;
-
-    if (ModalRoute.of(context)!.settings.arguments != null) {
-      transaction = ModalRoute.of(context)!.settings.arguments as TransactionModel;
-    }
-
-    _controller = TransactionFormController(transaction: transaction);
     _getData();
   }
 
   void _getData() async {
+    _controller = TransactionFormController(transaction: widget.transaction);
     List<CategoryModel> categories = await _controller.getCategories();
     List<CreditCardModel> creditCards = await _controller.getCredicards();
 
