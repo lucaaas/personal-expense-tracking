@@ -75,6 +75,10 @@ class TransactionModel extends BaseModel<TransactionModel> with TransactionConne
     return transactions;
   }
 
+  DateTime get dateOrCreatedAt {
+    return date ?? createdAt;
+  }
+
   @override
   Future<int> save() {
     for (CategoryModel category in categories) {
@@ -93,7 +97,7 @@ class TransactionModel extends BaseModel<TransactionModel> with TransactionConne
       'id': id,
       'description': description,
       'value': value,
-      'date': date?.toIso8601String(),
+      'date': date?.toIso8601String() ?? '',
       'createdAt': createdAt.toIso8601String(),
       'credit_card': creditCard?.id,
     };

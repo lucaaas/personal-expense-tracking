@@ -218,7 +218,7 @@ class TransactionCache {
 
   /// Sorts transactions in descending order by date.
   void _sortTransactions() {
-    transactions.sort((a, b) => b.date!.compareTo(a.date!));
+    transactions.sort((a, b) => b.dateOrCreatedAt.compareTo(a.dateOrCreatedAt));
   }
 }
 
@@ -249,7 +249,7 @@ class TransactionProvider with ChangeNotifier {
   Future<void> deleteTransaction(TransactionModel transaction) async {
     _lastDeletedTransaction = transaction;
 
-    String key = _getKeyFromDate(transaction.date!);
+    String key = _getKeyFromDate(transaction.dateOrCreatedAt);
     _groupedTransactions[key]!.removeTransaction(transaction);
     _updateBalance();
 
@@ -262,7 +262,7 @@ class TransactionProvider with ChangeNotifier {
   ///
   /// Returns `false` if the transaction is the previous month's balance.
   bool canModifyTransaction(TransactionModel transaction) {
-    String key = _getKeyFromDate(transaction.date!);
+    String key = _getKeyFromDate(transaction.dateOrCreatedAt);
     return transaction != _groupedTransactions[key]!.previousMonthBalance;
   }
 
@@ -293,7 +293,7 @@ class TransactionProvider with ChangeNotifier {
   /// Restores the last deleted transaction.
   Future<void> undoDeleteTransaction() async {
     if (_lastDeletedTransaction != null) {
-      String key = _getKeyFromDate(_lastDeletedTransaction!.date!);
+      String key = _getKeyFromDate(_lastDeletedTransaction!.dateOrCreatedAt);
       _groupedTransactions[key]!.addTransaction(_lastDeletedTransaction!);
       await _lastDeletedTransaction!.save();
       _lastDeletedTransaction = null;
@@ -305,13 +305,15 @@ class TransactionProvider with ChangeNotifier {
 
   /// Adds a transaction to the grouped transactions.
   void _addToGroupedTransactions(TransactionModel transaction) {
-    String key = _getKeyFromDate(transaction.date!);
+    DateTime date = transaction.dateOrCreatedAt;
+    String key = _getKeyFromDate(date);
 
     if (!_groupedTransactions.containsKey(key)) {
       _groupedTransactions[key] = TransactionCache(
-          transactions: [transaction],
-          isCached: true,
-          previousMonth: DateTime(transaction.date!.year, transaction.date!.month));
+        transactions: [transaction],
+        isCached: true,
+        previousMonth: DateTime(date.year, date.month),
+      );
     } else {
       List<TransactionModel> transactions = List.from(_groupedTransactions[key]!.transactions);
 
