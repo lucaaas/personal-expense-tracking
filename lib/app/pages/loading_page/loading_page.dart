@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:personal_expense_tracker/app/helpers/db_helper.dart';
-import 'package:personal_expense_tracker/app/providers/transaction_provider.dart';
+import 'package:personal_expense_tracker/app/providers/transaction_provider/transaction_provider.dart';
 import 'package:personal_expense_tracker/app/utils/app_routes.dart';
 import 'package:provider/provider.dart';
 

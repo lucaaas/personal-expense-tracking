@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:personal_expense_tracker/app/providers/transaction_provider.dart';
+import 'package:personal_expense_tracker/app/providers/transaction_provider/transaction_cache.dart';
 import 'package:personal_expense_tracker/app/widgets/card_widget/card_widget.dart';
 
 class MonthResume extends StatelessWidget {
