@@ -8,6 +8,9 @@ class TransactionCache {
   /// List of transactions stored in the cache.
   late List<TransactionModel> transactions;
 
+  /// List of estimated transactions
+  TransactionCache? estimatedTransactions;
+
   /// Represents the balance from the previous month.
   late TransactionModel previousMonthBalance;
 
@@ -31,7 +34,12 @@ class TransactionCache {
     required DateTime previousMonth,
     List<TransactionModel> transactions = const [],
     this.isCached = false,
-  }) : transactions = [] {
+  })  : transactions = [],
+        estimatedTransactions = TransactionCache._withoutEstimatedTransactions(
+          previousMonth: previousMonth,
+          transactions: [],
+          isCached: true,
+        ) {
     addAllTransactions(transactions);
 
     previousMonthBalance = TransactionModel(
@@ -42,6 +50,13 @@ class TransactionCache {
 
     addTransaction(previousMonthBalance);
   }
+
+  /// Creates a [TransactionCache] without estimated transactions.
+  TransactionCache._withoutEstimatedTransactions({
+    required DateTime previousMonth,
+    List<TransactionModel> transactions = const [],
+    this.isCached = false,
+  }) : transactions = [];
 
   /// Returns the total balance (income + expenses).
   double get balance => totalIncome + totalExpense;
@@ -85,6 +100,11 @@ class TransactionCache {
   ///
   /// Updates income, expenses, and credit card information.
   void addTransaction(TransactionModel transaction) {
+    if (transaction.date == null && estimatedTransactions != null) {
+      estimatedTransactions!.addTransaction(transaction);
+      return;
+    }
+
     transactions.add(transaction);
     _sortTransactions();
     _sumTotals(transaction);
@@ -107,6 +127,10 @@ class TransactionCache {
   /// Throws an exception if the transaction is the previous month's balance.
   void removeTransaction(TransactionModel transaction) {
     if (transaction != previousMonthBalance) {
+      if (transaction.date == null && estimatedTransactions != null) {
+        estimatedTransactions!.removeTransaction(transaction);
+      }
+
       transactions.remove(transaction);
 
       if (transaction.value > 0) {
