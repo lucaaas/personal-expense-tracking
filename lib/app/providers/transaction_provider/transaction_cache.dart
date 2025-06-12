@@ -9,7 +9,7 @@ class TransactionCache {
   late List<TransactionModel> transactions;
 
   /// List of estimated transactions
-  TransactionCache? estimatedTransactions;
+  TransactionCache? _estimatedTransactions;
 
   /// Represents the balance from the previous month.
   late TransactionModel previousMonthBalance;
@@ -35,7 +35,7 @@ class TransactionCache {
     List<TransactionModel> transactions = const [],
     this.isCached = false,
   })  : transactions = [],
-        estimatedTransactions = TransactionCache._withoutEstimatedTransactions(
+        _estimatedTransactions = TransactionCache._withoutEstimatedTransactions(
           previousMonth: previousMonth,
           transactions: [],
           isCached: true,
@@ -87,6 +87,17 @@ class TransactionCache {
     return categoryInfos;
   }
 
+  /// Returns a list of all estimated transactions.
+  List<TransactionModel> get estimatedTransactions {
+    return List.from(_estimatedTransactions!.transactions);
+  }
+
+  /// Returns the balance of estimated transactions.
+  double get estimatedTransactionsBalance => _estimatedTransactions!.balance;
+
+  /// Returns the total estimated balance.
+  double get totalEstimated => balance + estimatedTransactionsBalance;
+
   /// Calculates the total expenses related to credit cards.
   double get totalCreditCardExpense {
     double total = 0;
@@ -100,8 +111,8 @@ class TransactionCache {
   ///
   /// Updates income, expenses, and credit card information.
   void addTransaction(TransactionModel transaction) {
-    if (transaction.date == null && estimatedTransactions != null) {
-      estimatedTransactions!.addTransaction(transaction);
+    if (transaction.date == null && _estimatedTransactions != null) {
+      _estimatedTransactions!.addTransaction(transaction);
       return;
     }
 
@@ -127,8 +138,8 @@ class TransactionCache {
   /// Throws an exception if the transaction is the previous month's balance.
   void removeTransaction(TransactionModel transaction) {
     if (transaction != previousMonthBalance) {
-      if (transaction.date == null && estimatedTransactions != null) {
-        estimatedTransactions!.removeTransaction(transaction);
+      if (transaction.date == null && _estimatedTransactions != null) {
+        _estimatedTransactions!.removeTransaction(transaction);
       }
 
       transactions.remove(transaction);
