@@ -56,7 +56,13 @@ class TransactionCache {
     required DateTime previousMonth,
     List<TransactionModel> transactions = const [],
     this.isCached = false,
-  }) : transactions = [];
+  }) : transactions = [] {
+    previousMonthBalance = TransactionModel(
+      description: "",
+      value: 0,
+      date: previousMonth,
+    );
+  }
 
   /// Returns the total balance (income + expenses).
   double get balance => totalIncome + totalExpense;
@@ -140,6 +146,7 @@ class TransactionCache {
     if (transaction != previousMonthBalance) {
       if (transaction.date == null && _estimatedTransactions != null) {
         _estimatedTransactions!.removeTransaction(transaction);
+        return;
       }
 
       transactions.remove(transaction);
