@@ -123,11 +123,15 @@ class _StatementPageState extends State<StatementPage> {
       widgets.add(
           const SliverToBoxAdapter(child: Center(child: Text("Nenhuma transação encontrada"))));
     } else {
-      widgets.add(TransactionList(
-        transactions: _transaction!.transactions,
-        confirmModify: _confirmDismiss,
-        onTransactionDelete: _deleteTransaction,
-      ));
+      widgets.add(
+        TransactionList(
+          transactions: _transaction!.transactions,
+          estimatedTransactions: _transaction!.estimatedTransactions,
+          totalEstimated: _transaction!.estimatedTransactionsBalance,
+          confirmModify: _confirmDismiss,
+          onTransactionDelete: _deleteTransaction,
+        ),
+      );
     }
 
     return widgets;
