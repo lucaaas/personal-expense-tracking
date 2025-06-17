@@ -2,28 +2,35 @@ import 'package:flutter/cupertino.dart';
 
 class DatePickerFormFieldWidget extends StatefulWidget {
   final String label;
-  final DateTime initialValue;
-  final void Function(DateTime)? onSaved;
+  final DateTime? initialValue;
+  final void Function(DateTime?)? onSaved;
   final String? Function(String?)? validator;
 
-  DatePickerFormFieldWidget({super.key, required this.label, DateTime? initialValue, this.onSaved, this.validator})
-      : initialValue = initialValue ?? DateTime.now();
+  const DatePickerFormFieldWidget({
+    super.key,
+    required this.label,
+    this.initialValue,
+    this.onSaved,
+    this.validator,
+  });
 
   @override
   State<DatePickerFormFieldWidget> createState() => _DatePickerFormFieldWidgetState();
 }
 
 class _DatePickerFormFieldWidgetState extends State<DatePickerFormFieldWidget> {
-  late DateTime _selectedDate;
+  late DateTime? _selectedDate;
   final TextEditingController _controller = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _selectedDate = widget.initialValue;
-    _controller.text = '${_selectedDate.day.toString().padLeft(2, '0')}/'
-        '${_selectedDate.month.toString().padLeft(2, '0')}/'
-        '${_selectedDate.year}';
+    if (_selectedDate != null) {
+      _controller.text = '${_selectedDate!.day.toString().padLeft(2, '0')}/'
+          '${_selectedDate!.month.toString().padLeft(2, '0')}/'
+          '${_selectedDate!.year}';
+    }
   }
 
   @override
@@ -59,9 +66,9 @@ class _DatePickerFormFieldWidgetState extends State<DatePickerFormFieldWidget> {
           onDateTimeChanged: (value) {
             setState(() {
               _selectedDate = value;
-              _controller.text = '${_selectedDate.day.toString().padLeft(2, '0')}/'
-                  '${_selectedDate.month.toString().padLeft(2, '0')}/'
-                  '${_selectedDate.year}';
+              _controller.text = '${_selectedDate!.day.toString().padLeft(2, '0')}/'
+                  '${_selectedDate!.month.toString().padLeft(2, '0')}/'
+                  '${_selectedDate!.year}';
             });
           },
         ),

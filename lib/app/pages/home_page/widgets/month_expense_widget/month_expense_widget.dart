@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:personal_expense_tracker/app/helpers/format_to_money_string_helper.dart';
-import 'package:personal_expense_tracker/app/providers/transaction_provider.dart';
+import 'package:personal_expense_tracker/app/providers/transaction_provider/month_info.dart';
 import 'package:personal_expense_tracker/app/widgets/card_widget/card_widget.dart';
 import 'package:personal_expense_tracker/app/widgets/graph_bar_widget/graph_bar_widget.dart';
 

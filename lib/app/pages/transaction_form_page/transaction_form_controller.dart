@@ -3,7 +3,7 @@ import 'package:personal_expense_tracker/app/formatters/money_formatter.dart';
 import 'package:personal_expense_tracker/app/models/category_model.dart';
 import 'package:personal_expense_tracker/app/models/credit_card_model.dart';
 import 'package:personal_expense_tracker/app/models/transaction_model.dart';
-import 'package:personal_expense_tracker/app/providers/transaction_provider.dart';
+import 'package:personal_expense_tracker/app/providers/transaction_provider/transaction_provider.dart';
 import 'package:provider/provider.dart';
 
 enum TransactionType { expense, income }

@@ -2,7 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:personal_expense_tracker/app/helpers/format_to_money_string_helper.dart';
 import 'package:personal_expense_tracker/app/pages/home_page/widgets/month_expense_widget/month_expense_widget.dart';
 import 'package:personal_expense_tracker/app/pages/home_page/widgets/month_resume_widget/month_resume_widget.dart';
-import 'package:personal_expense_tracker/app/providers/transaction_provider.dart';
+import 'package:personal_expense_tracker/app/providers/transaction_provider/transaction_cache.dart';
+import 'package:personal_expense_tracker/app/providers/transaction_provider/transaction_provider.dart';
 import 'package:personal_expense_tracker/app/widgets/page_scaffold_widget/page_scaffold_widget.dart';
 import 'package:provider/provider.dart';
 

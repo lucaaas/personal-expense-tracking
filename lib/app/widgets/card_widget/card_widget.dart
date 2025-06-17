@@ -6,18 +6,18 @@ class CardWidget extends StatelessWidget {
   final Icon? icon;
   final Widget? trailing;
   final void Function()? onTap;
-
+  final EdgeInsets childPadding;
   final Widget? child;
 
-  const CardWidget({
-    super.key,
-    this.child,
-    required this.title,
-    this.subtitle,
-    this.icon,
-    this.trailing,
-    this.onTap,
-  });
+  const CardWidget(
+      {super.key,
+      this.child,
+      required this.title,
+      this.subtitle,
+      this.icon,
+      this.trailing,
+      this.onTap,
+      this.childPadding = const EdgeInsets.symmetric(horizontal: 16, vertical: 5)});
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +54,7 @@ class CardWidget extends StatelessWidget {
             ),
             if (child != null)
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+                padding: childPadding,
                 child: child,
               )
           ],

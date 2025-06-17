@@ -4,7 +4,8 @@ import 'package:personal_expense_tracker/app/helpers/snack_bar_helper.dart';
 import 'package:personal_expense_tracker/app/models/transaction_model.dart';
 import 'package:personal_expense_tracker/app/pages/statement_page/widgets/month_resume/month_resume.dart';
 import 'package:personal_expense_tracker/app/pages/statement_page/widgets/transaction_list/transaction_list.dart';
-import 'package:personal_expense_tracker/app/providers/transaction_provider.dart';
+import 'package:personal_expense_tracker/app/providers/transaction_provider/transaction_cache.dart';
+import 'package:personal_expense_tracker/app/providers/transaction_provider/transaction_provider.dart';
 import 'package:personal_expense_tracker/app/widgets/floating_tabbar_widget/floating_tabbar_widget.dart';
 import 'package:personal_expense_tracker/app/widgets/page_scaffold_widget/page_scaffold_widget.dart';
 import 'package:provider/provider.dart';
@@ -122,11 +123,15 @@ class _StatementPageState extends State<StatementPage> {
       widgets.add(
           const SliverToBoxAdapter(child: Center(child: Text("Nenhuma transação encontrada"))));
     } else {
-      widgets.add(TransactionList(
-        transactions: _transaction!.transactions,
-        confirmModify: _confirmDismiss,
-        onTransactionDelete: _deleteTransaction,
-      ));
+      widgets.add(
+        TransactionList(
+          transactions: _transaction!.transactions,
+          estimatedTransactions: _transaction!.estimatedTransactions,
+          totalEstimated: _transaction!.estimatedTransactionsBalance,
+          confirmModify: _confirmDismiss,
+          onTransactionDelete: _deleteTransaction,
+        ),
+      );
     }
 
     return widgets;
