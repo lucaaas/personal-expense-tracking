@@ -87,7 +87,6 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
             ),
             DatePickerFormFieldWidget(
               label: "data",
-              validator: RequiredValidator().validate,
               initialValue: _controller.transaction.date,
               onSaved: (date) => _controller.transaction.date = date,
             ),
