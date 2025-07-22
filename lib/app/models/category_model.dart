@@ -15,7 +15,11 @@ class CategoryModel extends BaseModel<CategoryModel> {
       : name = data["name"],
         color = data["color"].toString(),
         description = data["description"],
-        super(id: data["id"], createdAt: DateTime.parse(data["createdAt"]));
+        super(
+          id: data["id"],
+          createdAt: DateTime.parse(data["createdAt"]),
+          synced: data['synced'] == 1,
+        );
 
   CategoryModel.empty()
       : name = "",

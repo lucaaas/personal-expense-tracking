@@ -11,7 +11,11 @@ class CreditCardModel extends BaseModel<CreditCardModel> {
   CreditCardModel.fromMap(Map<String, dynamic> data)
       : name = data["name"],
         color = data["color"].toString(),
-        super(id: data["id"], createdAt: DateTime.parse(data["createdAt"]));
+        super(
+          id: data["id"],
+          createdAt: DateTime.parse(data["createdAt"]),
+          synced: data['synced'] == 1,
+        );
 
   CreditCardModel.empty()
       : name = "",

@@ -3,10 +3,12 @@ import 'package:personal_expense_tracker/app/connectors/base_connector.dart';
 abstract class BaseModel<T extends BaseModel<dynamic>> with BaseConnector<T> {
   int? id;
   DateTime createdAt;
+  bool synced;
 
   BaseModel({
     this.id,
     DateTime? createdAt,
+    this.synced = false,
   }) : createdAt = createdAt ?? DateTime.now();
 
   Map<String, dynamic> toMap();

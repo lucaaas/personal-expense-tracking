@@ -59,6 +59,7 @@ mixin TransactionConnector on BaseConnector<TransactionModel> {
       if (!transactions.containsKey(result['id'])) {
         transactions[result['id']] = {
           'id': result['id'],
+          'synced': result['synced'],
           'description': result['description'],
           'value': result['value'],
           'date': result['date'],
@@ -74,6 +75,7 @@ mixin TransactionConnector on BaseConnector<TransactionModel> {
           'name': result['category_name'],
           'description': result['category_description'],
           'color': result['category_color'],
+          'synced': result['category_synced'],
           'createdAt': result['category_createdAt'],
         });
       }
@@ -83,6 +85,7 @@ mixin TransactionConnector on BaseConnector<TransactionModel> {
           'id': result['credit_card_id'],
           'name': result['credit_card_name'],
           'color': result['credit_card_color'],
+          'synced': result['credit_card_synced'],
           'createdAt': result['credit_card_createdAt'],
         };
       }
@@ -103,9 +106,11 @@ mixin TransactionConnector on BaseConnector<TransactionModel> {
         'category.description as category_description',
         'category.createdAt as category_createdAt',
         'category.color as category_color',
+        'category.synced as category_synced',
         'credit_card.id as credit_card_id',
         'credit_card.name as credit_card_name',
         'credit_card.color as credit_card_color',
         'credit_card.createdAt as credit_card_createdAt',
+        'credit_card.synced as credit_card_synced',
       ];
 }

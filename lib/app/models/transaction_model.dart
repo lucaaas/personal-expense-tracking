@@ -28,7 +28,11 @@ class TransactionModel extends BaseModel<TransactionModel> with TransactionConne
             ? CreditCardModel.fromMap(data['credit_card'])
             : null,
         date = DateTime.tryParse(data['date']),
-        super(id: data['id'], createdAt: DateTime.parse(data['createdAt'])) {
+        super(
+          id: data['id'],
+          createdAt: DateTime.parse(data['createdAt']),
+          synced: data['synced'] == 1,
+        ) {
     for (Map<String, dynamic> category in data['categories']) {
       categories.add(CategoryModel.fromMap(category));
     }
@@ -85,7 +89,7 @@ class TransactionModel extends BaseModel<TransactionModel> with TransactionConne
       category.save();
     }
     creditCard?.save();
-    return insertOrUpdate(this);
+    return super.save();
   }
 
   @override
