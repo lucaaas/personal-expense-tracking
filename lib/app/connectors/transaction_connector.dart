@@ -2,6 +2,7 @@ import 'package:personal_expense_tracker/app/connectors/base_connector.dart';
 import 'package:personal_expense_tracker/app/helpers/db_helper.dart';
 import 'package:personal_expense_tracker/app/models/category_model.dart';
 import 'package:personal_expense_tracker/app/models/transaction_model.dart';
+import 'package:uuid/uuid.dart';
 
 mixin TransactionConnector on BaseConnector<TransactionModel> {
   final DBHelper _helper = DBHelper.getInstance();
@@ -13,7 +14,7 @@ mixin TransactionConnector on BaseConnector<TransactionModel> {
       columns: joinColumns,
     );
 
-    Map<int, Map<String, dynamic>> transactions = _groupTransactionsQueryResult(resultQuery);
+    Map<String, Map<String, dynamic>> transactions = _groupTransactionsQueryResult(resultQuery);
     return transactions.values.map((Map<String, dynamic> data) => toObject(data)).toList();
   }
 
@@ -29,7 +30,7 @@ mixin TransactionConnector on BaseConnector<TransactionModel> {
       orderBy: orderBy,
     );
 
-    Map<int, Map<String, dynamic>> transactions = _groupTransactionsQueryResult(resultQuery);
+    Map<String, Map<String, dynamic>> transactions = _groupTransactionsQueryResult(resultQuery);
     return transactions.values.map((Map<String, dynamic> data) => toObject(data)).toList();
   }
 
@@ -52,13 +53,15 @@ mixin TransactionConnector on BaseConnector<TransactionModel> {
     return transactionId;
   }
 
-  Map<int, Map<String, dynamic>> _groupTransactionsQueryResult(
+  Map<String, Map<String, dynamic>> _groupTransactionsQueryResult(
       List<Map<String, dynamic>> resultQuery) {
-    Map<int, Map<String, dynamic>> transactions = {};
+    Map<String, Map<String, dynamic>> transactions = {};
     for (Map<String, dynamic> result in resultQuery) {
+      final String transactionId = Uuid.unparse(result['id']);
+
       if (!transactions.containsKey(result['id'])) {
-        transactions[result['id']] = {
-          'id': result['id'],
+        transactions[transactionId] = {
+          'id': transactionId,
           'synced': result['synced'],
           'description': result['description'],
           'value': result['value'],
@@ -70,8 +73,9 @@ mixin TransactionConnector on BaseConnector<TransactionModel> {
       }
 
       if (result['category_id'] != null) {
-        transactions[result['id']]!['categories'].add({
-          'id': result['category_id'],
+        final String categoryId = Uuid.unparse(result['category_id']);
+        transactions[transactionId]!['categories'].add({
+          'id': categoryId,
           'name': result['category_name'],
           'description': result['category_description'],
           'color': result['category_color'],
@@ -81,8 +85,9 @@ mixin TransactionConnector on BaseConnector<TransactionModel> {
       }
 
       if (result['credit_card_id'] != null) {
-        transactions[result['id']]!['credit_card'] = {
-          'id': result['credit_card_id'],
+        final String creditCardId = Uuid.unparse(result['credit_card_id']);
+        transactions[transactionId]!['credit_card'] = {
+          'id': creditCardId,
           'name': result['credit_card_name'],
           'color': result['credit_card_color'],
           'synced': result['credit_card_synced'],

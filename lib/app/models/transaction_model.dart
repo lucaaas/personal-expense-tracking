@@ -84,7 +84,7 @@ class TransactionModel extends BaseModel<TransactionModel> with TransactionConne
   }
 
   @override
-  Future<int> save() {
+  Future<String> save() {
     for (CategoryModel category in categories) {
       category.save();
     }
@@ -110,5 +110,18 @@ class TransactionModel extends BaseModel<TransactionModel> with TransactionConne
   @override
   TransactionModel toObject(Map<String, dynamic> data) {
     return TransactionModel.fromMap(data);
+  }
+
+  @override
+  Map<String, dynamic> toApiMap() {
+    Map<String, dynamic> data = super.toApiMap();
+
+    data[id.toString()]['categories'] = Map.fromEntries(
+      categories.map(
+        (category) => MapEntry(category.id.toString(), true),
+      ),
+    );
+
+    return data;
   }
 }

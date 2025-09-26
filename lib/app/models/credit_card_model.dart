@@ -36,7 +36,7 @@ class CreditCardModel extends BaseModel<CreditCardModel> {
     return CreditCardModel.empty().getAll();
   }
 
-  static Future<CreditCardModel> get(int id) async {
+  static Future<CreditCardModel> get(List<int> id) async {
     return CreditCardModel.empty().getById(id);
   }
 
