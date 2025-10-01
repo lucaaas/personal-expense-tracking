@@ -1,8 +1,9 @@
 import 'package:personal_expense_tracker/app/connectors/base_connector.dart';
-import 'package:personal_expense_tracker/app/helpers/api_helper.dart';
 import 'package:uuid/uuid.dart';
 
-abstract class BaseModel<T extends BaseModel<dynamic>> with BaseConnector<T>, ApiHelper {
+import '../helpers/firebase_helper.dart';
+
+abstract class BaseModel<T extends BaseModel<dynamic>> with BaseConnector<T>, FirebaseHelper {
   String? id;
   DateTime createdAt;
   bool synced;
@@ -19,6 +20,7 @@ abstract class BaseModel<T extends BaseModel<dynamic>> with BaseConnector<T>, Ap
 
   Future<String> save() async {
     await super.insertOrUpdate(this as T); // save to local database and get id
+    await addDataToId(id!, toMap()); // save to firebase
 
     return id!;
   }
@@ -27,12 +29,6 @@ abstract class BaseModel<T extends BaseModel<dynamic>> with BaseConnector<T>, Ap
     return super.remove(this as T);
   }
 
-  Map<String, dynamic> toApiMap() {
-    return {
-      id.toString(): toMap(),
-    };
-  }
-
   @override
-  String get entity => table;
+  String get collection => table;
 }
