@@ -1,7 +1,9 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:personal_expense_tracker/app/helpers/db_helper.dart';
 import 'package:personal_expense_tracker/app/providers/transaction_provider/transaction_provider.dart';
 import 'package:personal_expense_tracker/app/utils/app_routes.dart';
+import 'package:personal_expense_tracker/firebase_options.dart';
 import 'package:provider/provider.dart';
 
 class LoadingPage extends StatelessWidget {
@@ -9,6 +11,7 @@ class LoadingPage extends StatelessWidget {
 
   void _initApp(BuildContext context) {
     DBHelper.getInstance();
+    Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
     Future.delayed(const Duration(seconds: 3), () async {
       if (context.mounted) {
