@@ -93,6 +93,28 @@ class TransactionModel extends BaseModel<TransactionModel> with TransactionConne
   }
 
   @override
+  Future<void> addDataToId(String id, Map<String, dynamic> data) async {
+    if (categories.isNotEmpty) {
+      for (CategoryModel category in categories) {
+        Map<String, dynamic> map = transactionHasCategoryToMap(category);
+        await addDataToCollection(transactionHasCategoryTable, map);
+      }
+    }
+
+    return super.addDataToId(id, data);
+  }
+
+  Map<String, dynamic> transactionHasCategoryToMap(CategoryModel category) {
+    Map<String, dynamic> data = {
+      'transaction_id': id,
+      'category_id': category.id,
+      'createdAt': DateTime.now().toIso8601String(),
+    };
+
+    return data;
+  }
+
+  @override
   String get table => "transactions";
 
   @override
@@ -110,18 +132,5 @@ class TransactionModel extends BaseModel<TransactionModel> with TransactionConne
   @override
   TransactionModel toObject(Map<String, dynamic> data) {
     return TransactionModel.fromMap(data);
-  }
-
-  @override
-  Map<String, dynamic> toApiMap() {
-    Map<String, dynamic> data = super.toApiMap();
-
-    data[id.toString()]['categories'] = Map.fromEntries(
-      categories.map(
-        (category) => MapEntry(category.id.toString(), true),
-      ),
-    );
-
-    return data;
   }
 }

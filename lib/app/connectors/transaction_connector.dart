@@ -40,13 +40,8 @@ mixin TransactionConnector on BaseConnector<TransactionModel> {
 
     if (model.categories.isNotEmpty) {
       for (CategoryModel category in model.categories) {
-        Map<String, dynamic> data = {
-          'transaction_id': transactionId,
-          'category_id': category.id,
-          'createdAt': DateTime.now().toIso8601String(),
-        };
-
-        _helper.insert(table: 'transaction_has_category', data: data);
+        Map<String, dynamic> data = model.transactionHasCategoryToMap(category);
+        _helper.insert(table: transactionHasCategoryTable, data: data);
       }
     }
 
@@ -118,4 +113,6 @@ mixin TransactionConnector on BaseConnector<TransactionModel> {
         'credit_card.createdAt as credit_card_createdAt',
         'credit_card.synced as credit_card_synced',
       ];
+
+  String get transactionHasCategoryTable => 'transaction_has_category';
 }
