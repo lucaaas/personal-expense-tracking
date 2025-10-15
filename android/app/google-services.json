@@ -1,0 +1,38 @@
+{
+  "project_info": {
+    "project_number": "716834455101",
+    "project_id": "personal-expense-trackin-85d92",
+    "storage_bucket": "personal-expense-trackin-85d92.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:716834455101:android:bfbfda6de975514b103454",
+        "android_client_info": {
+          "package_name": "com.example.personal_expense_tracking"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "716834455101-a9oq8o6p0dc1qh1uag67nep4ue8skcvk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.personal_expense_tracking",
+            "certificate_hash": "0f5ad202c2024bf919a5ad190b934140a47e3d20"
+          }
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB4EtPuSdgwvwpGjI-eYJ5V6lCy4iqyizc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
