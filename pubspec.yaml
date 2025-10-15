@@ -41,6 +41,7 @@ dependencies:
   cloud_firestore: ^6.0.2
   uuid: ^4.5.1
   firebase_core: ^4.1.1
+  shared_preferences: ^2.5.3
 
 dev_dependencies:
   flutter_test:
@@ -81,11 +82,11 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   fonts:
-   - family: Inter
-     fonts:
-       - asset: fonts/Inter-VariableFont_opsz,wght.ttf
-       - asset: fonts/Inter-Italic-VariableFont_opsz,wght.ttf
-         style: italic
+    - family: Inter
+      fonts:
+        - asset: fonts/Inter-VariableFont_opsz,wght.ttf
+        - asset: fonts/Inter-Italic-VariableFont_opsz,wght.ttf
+          style: italic
 
   #
   # For details regarding fonts from package dependencies,
