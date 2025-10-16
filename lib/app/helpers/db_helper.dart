@@ -56,7 +56,7 @@ class DBHelper {
   /// ```dart
   ///  Map<String, dynamic> data = await database.getDataById(tableModel, model.id);
   ///  ```
-  Future<Map<String, dynamic>> getDataById({required String table, required List<int> id}) async {
+  Future<Map<String, dynamic>> getDataById({required String table, required String id}) async {
     final db = _database;
     List<Map<String, dynamic>> data = await db.query(table, where: 'id=?', whereArgs: [id]);
     return data.first;
@@ -69,11 +69,15 @@ class DBHelper {
   /// int idInserted = await database.insert(tableModel, model.toMap());
   /// ```
   Future<String> insert({required String table, required Map<String, dynamic> data}) async {
-    final id = const Uuid().v4obj().toBytes();
-    data['id'] = id;
+    String id = data['id'] ?? "";
+
+    if (data.containsKey('id') && data['id'] == null) {
+      id = const Uuid().v4obj().uuid;
+      data['id'] = id;
+    }
     await _database.insert(table, data, conflictAlgorithm: ConflictAlgorithm.replace);
 
-    return Uuid.unparse(id);
+    return id;
   }
 
   /// Updates the [table] with [data] values that satisfies the [where] condition.
@@ -88,7 +92,7 @@ class DBHelper {
     required String where,
     required List whereArgs,
   }) async {
-    return await _database.update(table, data, where: where, whereArgs: whereArgs);
+    return _database.update(table, data, where: where, whereArgs: whereArgs);
   }
 
   /// Opens and initializes the database connection.
@@ -104,13 +108,13 @@ class DBHelper {
     _database = await openDatabase(path.join(dbPath, 'finances.db'), onCreate: (db, version) {
       db.execute('PRAGMA foreign_keys = ON');
       db.execute(
-          'CREATE TABLE credit_card(id BLOB PRIMARY KEY, name TEXT NOT NULL, color INTEGER, synced INTEGER DEFAULT 0, createdAt TEXT NOT NULL);');
+          'CREATE TABLE credit_card(id TEXT PRIMARY KEY, name TEXT NOT NULL, color INTEGER, synced INTEGER DEFAULT 0, createdAt TEXT NOT NULL);');
       db.execute(
-          'CREATE TABLE category(id BLOB PRIMARY KEY NOT NULL, name TEXT NOT NULL, color INTEGER, description TEXT, synced INTEGER DEFAULT 0, createdAt TEXT NOT NULL);');
+          'CREATE TABLE category(id TEXT PRIMARY KEY NOT NULL, name TEXT NOT NULL, color INTEGER, description TEXT, synced INTEGER DEFAULT 0, createdAt TEXT NOT NULL);');
       db.execute(
-          'CREATE TABLE transactions(id BLOB PRIMARY KEY NOT NULL, description TEXT NOT NULL, value FLOAT NOT NULL, date TEXT, synced INTEGER DEFAULT 0, createdAt TEXT NOT NULL, credit_card BLOB, FOREIGN KEY(credit_card) REFERENCES credit_card(id));');
+          'CREATE TABLE transactions(id TEXT PRIMARY KEY NOT NULL, description TEXT NOT NULL, value FLOAT NOT NULL, date TEXT, synced INTEGER DEFAULT 0, createdAt TEXT NOT NULL, credit_card TEXT, FOREIGN KEY(credit_card) REFERENCES credit_card(id));');
       db.execute(
-          'CREATE TABLE transaction_has_category(transaction_id BLOB NOT NULL, category_id BLOB NOT NULL, synced INTEGER DEFAULT 0, createdAt TEXT NOT NULL, PRIMARY KEY(transaction_id, category_id), FOREIGN KEY(transaction_id) REFERENCES transactions(id), FOREIGN KEY(category_id) REFERENCES category(id));');
+          'CREATE TABLE transaction_has_category(transaction_id TEXT NOT NULL, category_id BLOB NOT NULL, synced INTEGER DEFAULT 0, createdAt TEXT NOT NULL, PRIMARY KEY(transaction_id, category_id), FOREIGN KEY(transaction_id) REFERENCES transactions(id), FOREIGN KEY(category_id) REFERENCES category(id));');
     }, version: 2);
   }
 }

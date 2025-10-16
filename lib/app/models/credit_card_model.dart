@@ -36,7 +36,7 @@ class CreditCardModel extends BaseModel<CreditCardModel> {
     return CreditCardModel.empty().getAll();
   }
 
-  static Future<CreditCardModel> get(List<int> id) async {
+  static Future<CreditCardModel> get(String id) async {
     return CreditCardModel.empty().getById(id);
   }
 
@@ -49,6 +49,7 @@ class CreditCardModel extends BaseModel<CreditCardModel> {
   Map<String, dynamic> toMap() {
     return {
       "id": id,
+      "synced": synced ? 1 : 0,
       "createdAt": createdAt.toIso8601String(),
       "name": name,
       "color": color,

@@ -1,32 +1,61 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:personal_expense_tracker/app/helpers/db_helper.dart';
+import 'package:personal_expense_tracker/app/models/category_model.dart';
+import 'package:personal_expense_tracker/app/models/credit_card_model.dart';
+import 'package:personal_expense_tracker/app/models/transaction_model.dart';
 import 'package:personal_expense_tracker/app/providers/transaction_provider/transaction_provider.dart';
 import 'package:personal_expense_tracker/app/utils/app_routes.dart';
 import 'package:personal_expense_tracker/firebase_options.dart';
 import 'package:provider/provider.dart';
 
-class LoadingPage extends StatelessWidget {
+class LoadingPage extends StatefulWidget {
   const LoadingPage({super.key});
 
-  void _initApp(BuildContext context) {
-    DBHelper.getInstance();
-    Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  @override
+  State<LoadingPage> createState() => _LoadingPageState();
+}
 
-    Future.delayed(const Duration(seconds: 3), () async {
-      if (context.mounted) {
-        await Provider.of<TransactionProvider>(context, listen: false).init();
-        Navigator.of(context).pushReplacementNamed(AppRoutes.TAB);
-      }
-    });
+class _LoadingPageState extends State<LoadingPage> {
+  @override
+  void initState() {
+    super.initState();
+    _initApp();
+  }
+
+  void _initApp() async {
+    // try {
+    DBHelper.getInstance();
+    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+    await _sync();
+
+    if (mounted) {
+      await Provider.of<TransactionProvider>(context, listen: false).init();
+      Navigator.of(context).pushReplacementNamed(AppRoutes.TAB);
+    }
+    // } catch (e) {
+    //   print("Erro durante a inicialização: $e");
+    //   if (mounted) {
+    //     ScaffoldMessenger.of(context).showSnackBar(
+    //       SnackBar(content: Text('Falha ao carregar dados: $e')),
+    //     );
+    //   }
+    // }
+  }
+
+  Future<void> _sync() async {
+    await CategoryModel.empty().sync();
+    await CreditCardModel.empty().sync();
+    await TransactionModel.empty().sync();
   }
 
   @override
   Widget build(BuildContext context) {
-    _initApp(context);
-
-    return const Center(
-      child: LinearProgressIndicator(),
+    return const Scaffold(
+      body: Center(
+        child: LinearProgressIndicator(),
+      ),
     );
   }
 }

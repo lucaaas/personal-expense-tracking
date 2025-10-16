@@ -2,7 +2,6 @@ import 'package:personal_expense_tracker/app/connectors/base_connector.dart';
 import 'package:personal_expense_tracker/app/helpers/db_helper.dart';
 import 'package:personal_expense_tracker/app/models/category_model.dart';
 import 'package:personal_expense_tracker/app/models/transaction_model.dart';
-import 'package:uuid/uuid.dart';
 
 mixin TransactionConnector on BaseConnector<TransactionModel> {
   final DBHelper _helper = DBHelper.getInstance();
@@ -37,22 +36,49 @@ mixin TransactionConnector on BaseConnector<TransactionModel> {
   @override
   Future<int> insertOrUpdate(TransactionModel model) async {
     int transactionId = await super.insertOrUpdate(model);
-
-    if (model.categories.isNotEmpty) {
-      for (CategoryModel category in model.categories) {
-        Map<String, dynamic> data = model.transactionHasCategoryToMap(category);
-        _helper.insert(table: transactionHasCategoryTable, data: data);
-      }
-    }
+    await insertTransactionHasCategory(model);
 
     return transactionId;
+  }
+
+  @override
+  Future<int> insert(TransactionModel model) async {
+    int transactionId = await super.insert(model);
+    await insertTransactionHasCategory(model);
+
+    return transactionId;
+  }
+
+  Future<void> insertTransactionHasCategory(TransactionModel transaction) async {
+    for (CategoryModel category in transaction.categories) {
+      Map<String, dynamic> data = {
+        'transaction_id': transaction.id,
+        'category_id': category.id,
+        'createdAt': transaction.createdAt.toIso8601String(),
+      };
+
+      _helper.insert(table: transactionHasCategoryTable, data: data);
+    }
+  }
+
+  Future<int> updateTransactionHasCategorySyncStatus(
+    TransactionModel transaction,
+    CategoryModel category,
+    bool synced,
+  ) async {
+    return await _helper.update(
+      table: transactionHasCategoryTable,
+      data: {'synced': synced ? 1 : 0},
+      where: 'transaction_id=? AND category_id=?',
+      whereArgs: [transaction.id, category.id],
+    );
   }
 
   Map<String, Map<String, dynamic>> _groupTransactionsQueryResult(
       List<Map<String, dynamic>> resultQuery) {
     Map<String, Map<String, dynamic>> transactions = {};
     for (Map<String, dynamic> result in resultQuery) {
-      final String transactionId = Uuid.unparse(result['id']);
+      final String transactionId = result['id'];
 
       if (!transactions.containsKey(result['id'])) {
         transactions[transactionId] = {
@@ -62,15 +88,14 @@ mixin TransactionConnector on BaseConnector<TransactionModel> {
           'value': result['value'],
           'date': result['date'],
           'createdAt': result['createdAt'],
-          'credit_card': {},
+          'credit_card': null,
           'categories': [],
         };
       }
 
       if (result['category_id'] != null) {
-        final String categoryId = Uuid.unparse(result['category_id']);
         transactions[transactionId]!['categories'].add({
-          'id': categoryId,
+          'id': result['category_id'],
           'name': result['category_name'],
           'description': result['category_description'],
           'color': result['category_color'],
@@ -80,9 +105,8 @@ mixin TransactionConnector on BaseConnector<TransactionModel> {
       }
 
       if (result['credit_card_id'] != null) {
-        final String creditCardId = Uuid.unparse(result['credit_card_id']);
         transactions[transactionId]!['credit_card'] = {
-          'id': creditCardId,
+          'id': result['credit_card_id'],
           'name': result['credit_card_name'],
           'color': result['credit_card_color'],
           'synced': result['credit_card_synced'],

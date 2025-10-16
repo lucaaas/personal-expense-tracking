@@ -47,6 +47,7 @@ class CategoryModel extends BaseModel<CategoryModel> {
     return {
       "id": id,
       "createdAt": createdAt.toIso8601String(),
+      "synced": synced ? 1 : 0,
       "name": name,
       "color": color,
       "description": description,
