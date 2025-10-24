@@ -1,4 +1,4 @@
-import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:personal_expense_tracker/app/helpers/db_helper.dart';
 import 'package:personal_expense_tracker/app/models/category_model.dart';
@@ -6,7 +6,6 @@ import 'package:personal_expense_tracker/app/models/credit_card_model.dart';
 import 'package:personal_expense_tracker/app/models/transaction_model.dart';
 import 'package:personal_expense_tracker/app/providers/transaction_provider/transaction_provider.dart';
 import 'package:personal_expense_tracker/app/utils/app_routes.dart';
-import 'package:personal_expense_tracker/firebase_options.dart';
 import 'package:provider/provider.dart';
 
 class LoadingPage extends StatefulWidget {
@@ -26,9 +25,10 @@ class _LoadingPageState extends State<LoadingPage> {
   void _initApp() async {
     // try {
     DBHelper.getInstance();
-    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-    await _sync();
+    if (FirebaseAuth.instance.currentUser != null) {
+      await _sync();
+    }
 
     if (mounted) {
       await Provider.of<TransactionProvider>(context, listen: false).init();
@@ -52,10 +52,6 @@ class _LoadingPageState extends State<LoadingPage> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: LinearProgressIndicator(),
-      ),
-    );
+    return const Scaffold(body: Center(child: LinearProgressIndicator()));
   }
 }
