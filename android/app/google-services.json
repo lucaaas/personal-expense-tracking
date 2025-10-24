@@ -20,6 +20,10 @@
             "package_name": "com.example.personal_expense_tracking",
             "certificate_hash": "0f5ad202c2024bf919a5ad190b934140a47e3d20"
           }
+        },
+        {
+          "client_id": "716834455101-9vvf6q7vh6kudqpq96chbf7l9751o6vb.apps.googleusercontent.com",
+          "client_type": 3
         }
       ],
       "api_key": [
@@ -29,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "716834455101-9vvf6q7vh6kudqpq96chbf7l9751o6vb.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "716834455101-2b2d0oa52o2ib4crv2li25kpa08dd563.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.personalExpenseTracker"
+              }
+            }
+          ]
         }
       }
     }
