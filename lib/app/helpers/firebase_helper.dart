@@ -1,46 +1,48 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 abstract mixin class FirebaseHelper {
   final FirebaseFirestore _firebase = FirebaseFirestore.instance;
 
   Future<void> addDataToId(String id, Map<String, dynamic> data, [String? col]) async {
-    String collection = col ?? this.collection;
-
-    await _firebase.collection(collection).doc(id).set(data);
+    CollectionReference collection = _getCollection(col ?? this.collection);
+    await collection.doc(id).set(data);
   }
 
   Future<void> addDataToCollection(String collection, Map<String, dynamic> data) async {
-    await _firebase.collection(collection).add(data);
+    CollectionReference collectionReference = _getCollection(collection);
+    await collectionReference.add(data);
   }
 
   Future<List<Map<String, dynamic>>> getAllSinceDate(DateTime? since, [String? col]) async {
-    String collection = col ?? this.collection;
+    CollectionReference collection = _getCollection(col ?? this.collection);
+
     QuerySnapshot snapshot;
 
     if (since == null) {
-      snapshot = await _firebase.collection(collection).get();
+      snapshot = await collection.get();
     } else {
-      snapshot = await _firebase
-          .collection(collection)
-          .where('createdAt', isGreaterThan: since.toIso8601String())
-          .get();
+      snapshot = await collection.where('createdAt', isGreaterThan: since.toIso8601String()).get();
     }
 
     return _snapshotToList(snapshot);
   }
 
   Future<Map<String, dynamic>> getDocById(String id, [String? col]) async {
-    String collection = col ?? this.collection;
-    DocumentSnapshot snapshot = await _firebase.collection(collection).doc(id).get();
+    CollectionReference collection = _getCollection(col ?? this.collection);
 
+    DocumentSnapshot snapshot = await collection.doc(id).get();
     return snapshot.data() as Map<String, dynamic>;
   }
 
-  Future<List<Map<String, dynamic>>> getDocsEqualTo(String field, String value,
-      [String? col]) async {
-    String collection = col ?? this.collection;
-    QuerySnapshot snapshot =
-        await _firebase.collection(collection).where(field, isEqualTo: value).get();
+  Future<List<Map<String, dynamic>>> getDocsEqualTo(
+    String field,
+    String value, [
+    String? col,
+  ]) async {
+    CollectionReference collection = _getCollection(col ?? this.collection);
+
+    QuerySnapshot snapshot = await collection.where(field, isEqualTo: value).get();
     return _snapshotToList(snapshot);
   }
 
@@ -53,5 +55,21 @@ abstract mixin class FirebaseHelper {
     return data;
   }
 
+  CollectionReference<Map<String, dynamic>> _getCollection(String collection) {
+    if (_isAuthenticated) {
+      return _firebase.collection("users").doc(_userId).collection(collection);
+    } else {
+      throw Exception('Not authenticated');
+    }
+  }
+
   String get collection;
+
+  bool get _isAuthenticated {
+    return FirebaseAuth.instance.currentUser != null;
+  }
+
+  String get _userId {
+    return FirebaseAuth.instance.currentUser!.uid;
+  }
 }
