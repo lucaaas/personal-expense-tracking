@@ -10,8 +10,12 @@ abstract mixin class BaseConnector<T extends BaseModel<dynamic>> {
     return await _helper.delete(table, 'id=?', [model.id]);
   }
 
-  Future<List<T>> filter(
-      {String? where, List<Object>? whereArgs, int? limit, String? orderBy}) async {
+  Future<List<T>> filter({
+    String? where,
+    List<Object>? whereArgs,
+    int? limit,
+    String? orderBy,
+  }) async {
     List<Map<String, dynamic>> data = await _helper.getData(
       table: table,
       where: where,
@@ -39,6 +43,7 @@ abstract mixin class BaseConnector<T extends BaseModel<dynamic>> {
     if (model.id == null) {
       return insert(model);
     } else {
+      model.updatedAt = DateTime.now();
       Map<String, dynamic> data = model.toMap();
 
       return await _helper.update(table: table, data: data, where: 'id=?', whereArgs: [model.id]);

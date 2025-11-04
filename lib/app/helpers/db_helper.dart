@@ -105,16 +105,34 @@ class DBHelper {
   /// **Returns:** A [Future] that resolves to the opened [Database] object.
   Future<void> _initDatabase() async {
     final dbPath = await getDatabasesPath();
-    _database = await openDatabase(path.join(dbPath, 'finances.db'), onCreate: (db, version) {
-      db.execute('PRAGMA foreign_keys = ON');
-      db.execute(
-          'CREATE TABLE credit_card(id TEXT PRIMARY KEY, name TEXT NOT NULL, color INTEGER, synced INTEGER DEFAULT 0, createdAt TEXT NOT NULL);');
-      db.execute(
-          'CREATE TABLE category(id TEXT PRIMARY KEY NOT NULL, name TEXT NOT NULL, color INTEGER, description TEXT, synced INTEGER DEFAULT 0, createdAt TEXT NOT NULL);');
-      db.execute(
-          'CREATE TABLE transactions(id TEXT PRIMARY KEY NOT NULL, description TEXT NOT NULL, value FLOAT NOT NULL, date TEXT, synced INTEGER DEFAULT 0, createdAt TEXT NOT NULL, credit_card TEXT, FOREIGN KEY(credit_card) REFERENCES credit_card(id));');
-      db.execute(
-          'CREATE TABLE transaction_has_category(transaction_id TEXT NOT NULL, category_id BLOB NOT NULL, synced INTEGER DEFAULT 0, createdAt TEXT NOT NULL, PRIMARY KEY(transaction_id, category_id), FOREIGN KEY(transaction_id) REFERENCES transactions(id), FOREIGN KEY(category_id) REFERENCES category(id));');
-    }, version: 2);
+    _database = await openDatabase(
+      path.join(dbPath, 'finances.db'),
+      onCreate: (db, version) {
+        db.execute('PRAGMA foreign_keys = ON');
+        db.execute(
+          'CREATE TABLE credit_card('
+          'id TEXT PRIMARY KEY, name TEXT NOT NULL, color INTEGER, synced INTEGER DEFAULT 0, '
+          'createdAt TEXT NOT NULL, updatedAt TEXT NOT NULL);',
+        );
+        db.execute(
+          'CREATE TABLE category('
+          'id TEXT PRIMARY KEY NOT NULL, name TEXT NOT NULL, color INTEGER, description TEXT, '
+          'synced INTEGER DEFAULT 0, createdAt TEXT NOT NULL, updatedAt TEXT NOT NULL);',
+        );
+        db.execute(
+          'CREATE TABLE transactions('
+          'id TEXT PRIMARY KEY NOT NULL, description TEXT NOT NULL, value FLOAT NOT NULL, '
+          'date TEXT, synced INTEGER DEFAULT 0, createdAt TEXT NOT NULL, updatedAt TEXT NOT NULL,'
+          ' credit_card TEXT, FOREIGN KEY(credit_card) REFERENCES credit_card(id));',
+        );
+        db.execute(
+          'CREATE TABLE transaction_has_category('
+          'transaction_id TEXT NOT NULL, category_id BLOB NOT NULL, synced INTEGER DEFAULT 0, '
+          'createdAt TEXT NOT NULL, updatedAt TEXT NOT NULL, PRIMARY KEY(transaction_id, category_id),'
+          ' FOREIGN KEY(transaction_id) REFERENCES transactions(id), FOREIGN KEY(category_id) REFERENCES category(id));',
+        );
+      },
+      version: 2,
+    );
   }
 }

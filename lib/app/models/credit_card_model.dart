@@ -9,18 +9,16 @@ class CreditCardModel extends BaseModel<CreditCardModel> {
   CreditCardModel({super.id, super.createdAt, required this.name, required this.color});
 
   CreditCardModel.fromMap(Map<String, dynamic> data)
-      : name = data["name"],
-        color = data["color"].toString(),
-        super(
-          id: data["id"],
-          createdAt: DateTime.parse(data["createdAt"]),
-          synced: data['synced'] == 1,
-        );
+    : name = data["name"],
+      color = data["color"].toString(),
+      super(
+        id: data["id"],
+        createdAt: DateTime.parse(data["createdAt"]),
+        updatedAt: DateTime.parse(data['updatedAt']),
+        synced: data['synced'] == 1,
+      );
 
-  CreditCardModel.empty()
-      : name = "",
-        color = "0xFFFF9700",
-        super();
+  CreditCardModel.empty() : name = "", color = "0xFFFF9700", super();
 
   @override
   String get table => "credit_card";
@@ -47,12 +45,6 @@ class CreditCardModel extends BaseModel<CreditCardModel> {
 
   @override
   Map<String, dynamic> toMap() {
-    return {
-      "id": id,
-      "synced": synced ? 1 : 0,
-      "createdAt": createdAt.toIso8601String(),
-      "name": name,
-      "color": color,
-    };
+    return {...super.toMap(), "name": name, "color": color};
   }
 }

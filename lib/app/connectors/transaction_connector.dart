@@ -18,8 +18,12 @@ mixin TransactionConnector on BaseConnector<TransactionModel> {
   }
 
   @override
-  Future<List<TransactionModel>> filter(
-      {String? where, List<Object>? whereArgs, int? limit, String? orderBy}) async {
+  Future<List<TransactionModel>> filter({
+    String? where,
+    List<Object>? whereArgs,
+    int? limit,
+    String? orderBy,
+  }) async {
     List<Map<String, dynamic>> resultQuery = await _helper.getData(
       table: joinTable,
       columns: joinColumns,
@@ -55,6 +59,7 @@ mixin TransactionConnector on BaseConnector<TransactionModel> {
         'transaction_id': transaction.id,
         'category_id': category.id,
         'createdAt': transaction.createdAt.toIso8601String(),
+        'updatedAt': DateTime.now().toIso8601String(),
       };
 
       _helper.insert(table: transactionHasCategoryTable, data: data);
@@ -75,7 +80,8 @@ mixin TransactionConnector on BaseConnector<TransactionModel> {
   }
 
   Map<String, Map<String, dynamic>> _groupTransactionsQueryResult(
-      List<Map<String, dynamic>> resultQuery) {
+    List<Map<String, dynamic>> resultQuery,
+  ) {
     Map<String, Map<String, dynamic>> transactions = {};
     for (Map<String, dynamic> result in resultQuery) {
       final String transactionId = result['id'];
@@ -88,6 +94,7 @@ mixin TransactionConnector on BaseConnector<TransactionModel> {
           'value': result['value'],
           'date': result['date'],
           'createdAt': result['createdAt'],
+          'updatedAt': result['updatedAt'],
           'credit_card': null,
           'categories': [],
         };
@@ -100,6 +107,7 @@ mixin TransactionConnector on BaseConnector<TransactionModel> {
           'description': result['category_description'],
           'color': result['category_color'],
           'synced': result['category_synced'],
+          'updatedAt': result['category_updatedAt'],
           'createdAt': result['category_createdAt'],
         });
       }
@@ -111,6 +119,7 @@ mixin TransactionConnector on BaseConnector<TransactionModel> {
           'color': result['credit_card_color'],
           'synced': result['credit_card_synced'],
           'createdAt': result['credit_card_createdAt'],
+          'updatedAt': result['credit_card_updatedAt'],
         };
       }
     }
@@ -118,25 +127,28 @@ mixin TransactionConnector on BaseConnector<TransactionModel> {
     return transactions;
   }
 
-  String get joinTable => 'transactions '
+  String get joinTable =>
+      'transactions '
       'LEFT JOIN transaction_has_category ON transactions.id = transaction_has_category.transaction_id '
       'LEFT JOIN category ON transaction_has_category.category_id = category.id '
       'LEFT JOIN credit_card ON transactions.credit_card = credit_card.id ';
 
   List<String> get joinColumns => [
-        'transactions.*',
-        'category.id as category_id',
-        'category.name as category_name',
-        'category.description as category_description',
-        'category.createdAt as category_createdAt',
-        'category.color as category_color',
-        'category.synced as category_synced',
-        'credit_card.id as credit_card_id',
-        'credit_card.name as credit_card_name',
-        'credit_card.color as credit_card_color',
-        'credit_card.createdAt as credit_card_createdAt',
-        'credit_card.synced as credit_card_synced',
-      ];
+    'transactions.*',
+    'category.id as category_id',
+    'category.name as category_name',
+    'category.description as category_description',
+    'category.createdAt as category_createdAt',
+    'category.updatedAt as category_updatedAt',
+    'category.color as category_color',
+    'category.synced as category_synced',
+    'credit_card.id as credit_card_id',
+    'credit_card.name as credit_card_name',
+    'credit_card.color as credit_card_color',
+    'credit_card.createdAt as credit_card_createdAt',
+    'credit_card.updatedAt as credit_card_updatedAt',
+    'credit_card.synced as credit_card_synced',
+  ];
 
   String get transactionHasCategoryTable => 'transaction_has_category';
 }

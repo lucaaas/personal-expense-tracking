@@ -7,15 +7,22 @@ import '../helpers/firebase_helper.dart';
 abstract class BaseModel<T extends BaseModel<dynamic>> with BaseConnector<T>, FirebaseHelper {
   String? id;
   DateTime createdAt;
+  DateTime updatedAt;
   bool synced;
 
-  BaseModel({
-    this.id,
-    DateTime? createdAt,
-    this.synced = false,
-  }) : createdAt = createdAt ?? DateTime.now();
+  BaseModel({this.id, DateTime? createdAt, DateTime? updatedAt, this.synced = false})
+    : createdAt = createdAt ?? DateTime.now(),
+      updatedAt = updatedAt ?? DateTime.now();
 
-  Map<String, dynamic> toMap();
+  @mustCallSuper
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'createdAt': createdAt.toIso8601String(),
+      'updatedAt': updatedAt.toIso8601String(),
+      'synced': synced ? 1 : 0,
+    };
+  }
 
   Future<String> save() async {
     await super.insertOrUpdate(this as T); // save to local database and get id

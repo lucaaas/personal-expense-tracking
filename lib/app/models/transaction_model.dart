@@ -22,26 +22,25 @@ class TransactionModel extends BaseModel<TransactionModel> with TransactionConne
   });
 
   TransactionModel.fromMap(Map<String, dynamic> data)
-      : description = data['description'],
-        value = data['value'],
-        categories = [],
-        creditCard =
-            data['credit_card'] != null ? CreditCardModel.fromMap(data['credit_card']) : null,
-        date = DateTime.tryParse(data['date']),
-        super(
-          id: data['id'],
-          createdAt: DateTime.parse(data['createdAt']),
-          synced: data['synced'] == 1,
-        ) {
+    : description = data['description'],
+      value = data['value'],
+      categories = [],
+      creditCard = data['credit_card'] != null
+          ? CreditCardModel.fromMap(data['credit_card'])
+          : null,
+      date = DateTime.tryParse(data['date']),
+      super(
+        id: data['id'],
+        createdAt: DateTime.parse(data['createdAt']),
+        updatedAt: DateTime.parse(data['updatedAt']),
+        synced: data['synced'] == 1,
+      ) {
     for (Map<String, dynamic> category in data['categories']) {
       categories.add(CategoryModel.fromMap(category));
     }
   }
 
-  TransactionModel.empty()
-      : description = '',
-        value = 0,
-        categories = [];
+  TransactionModel.empty() : description = '', value = 0, categories = [];
 
   static Future<List<TransactionModel>> list() async {
     List<TransactionModel> transactions = await TransactionModel.empty().getAll();
@@ -52,15 +51,19 @@ class TransactionModel extends BaseModel<TransactionModel> with TransactionConne
   static Future<List<DateTime>> getTransactionsDateRange() async {
     List<DateTime> dates = [];
 
-    List<TransactionModel> firstTransaction =
-        await TransactionModel.empty().filter(limit: 1, orderBy: 'date ASC');
+    List<TransactionModel> firstTransaction = await TransactionModel.empty().filter(
+      limit: 1,
+      orderBy: 'date ASC',
+    );
 
     if (firstTransaction.isNotEmpty) {
       dates.add(firstTransaction.first.date!);
     }
 
-    List<TransactionModel> lastTransaction =
-        await TransactionModel.empty().filter(limit: 1, orderBy: 'date DESC');
+    List<TransactionModel> lastTransaction = await TransactionModel.empty().filter(
+      limit: 1,
+      orderBy: 'date DESC',
+    );
 
     if (lastTransaction.isNotEmpty) {
       dates.add(lastTransaction.first.date!);
@@ -120,8 +123,9 @@ class TransactionModel extends BaseModel<TransactionModel> with TransactionConne
       }
 
       if (transactionData['credit_card'] != null) {
-        CreditCardModel creditCard =
-            await CreditCardModel.empty().getById(transactionData['credit_card']);
+        CreditCardModel creditCard = await CreditCardModel.empty().getById(
+          transactionData['credit_card'],
+        );
 
         transactionData['credit_card'] = creditCard.toMap();
       }
@@ -175,12 +179,10 @@ class TransactionModel extends BaseModel<TransactionModel> with TransactionConne
   @override
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
-      'synced': synced ? 1 : 0,
+      ...super.toMap(),
       'description': description,
       'value': value,
       'date': date?.toIso8601String() ?? '',
-      'createdAt': createdAt.toIso8601String(),
       'credit_card': creditCard?.id,
     };
   }
