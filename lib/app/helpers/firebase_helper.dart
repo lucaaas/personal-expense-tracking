@@ -22,7 +22,7 @@ abstract mixin class FirebaseHelper {
     if (since == null) {
       snapshot = await collection.get();
     } else {
-      snapshot = await collection.where('createdAt', isGreaterThan: since.toIso8601String()).get();
+      snapshot = await collection.where('updatedAt', isGreaterThan: since.toIso8601String()).get();
     }
 
     return _snapshotToList(snapshot);
