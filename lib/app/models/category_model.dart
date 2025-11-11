@@ -24,6 +24,7 @@ class CategoryModel extends BaseModel<CategoryModel> {
         id: data["id"],
         createdAt: DateTime.parse(data["createdAt"]),
         updatedAt: DateTime.parse(data['updatedAt']),
+        isDeleted: data['isDeleted'] == 1,
         synced: data['synced'] == 1,
       );
 

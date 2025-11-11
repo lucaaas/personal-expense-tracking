@@ -8,11 +8,17 @@ abstract class BaseModel<T extends BaseModel<dynamic>> with BaseConnector<T>, Fi
   String? id;
   DateTime createdAt;
   DateTime updatedAt;
+  bool isDeleted;
   bool synced;
 
-  BaseModel({this.id, DateTime? createdAt, DateTime? updatedAt, this.synced = false})
-    : createdAt = createdAt ?? DateTime.now(),
-      updatedAt = updatedAt ?? DateTime.now();
+  BaseModel({
+    this.id,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    this.isDeleted = false,
+    this.synced = false,
+  }) : createdAt = createdAt ?? DateTime.now(),
+       updatedAt = updatedAt ?? DateTime.now();
 
   @mustCallSuper
   Map<String, dynamic> toMap() {
@@ -20,6 +26,7 @@ abstract class BaseModel<T extends BaseModel<dynamic>> with BaseConnector<T>, Fi
       'id': id,
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
+      'isDeleted': isDeleted ? 1 : 0,
       'synced': synced ? 1 : 0,
     };
   }

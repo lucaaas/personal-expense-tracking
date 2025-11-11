@@ -33,6 +33,7 @@ class TransactionModel extends BaseModel<TransactionModel> with TransactionConne
         id: data['id'],
         createdAt: DateTime.parse(data['createdAt']),
         updatedAt: DateTime.parse(data['updatedAt']),
+        isDeleted: data['isDeleted'] == 1,
         synced: data['synced'] == 1,
       ) {
     for (Map<String, dynamic> category in data['categories']) {
