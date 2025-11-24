@@ -8,10 +8,7 @@ mixin TransactionConnector on BaseConnector<TransactionModel> {
 
   @override
   Future<List<TransactionModel>> getAll() async {
-    List<Map<String, dynamic>> resultQuery = await _helper.getData(
-      table: joinTable,
-      columns: joinColumns,
-    );
+    List<Map<String, dynamic>> resultQuery = await _helper.getData(table: _transactionView);
 
     Map<String, Map<String, dynamic>> transactions = _groupTransactionsQueryResult(resultQuery);
     return transactions.values.map((Map<String, dynamic> data) => toObject(data)).toList();
@@ -25,8 +22,7 @@ mixin TransactionConnector on BaseConnector<TransactionModel> {
     String? orderBy,
   }) async {
     List<Map<String, dynamic>> resultQuery = await _helper.getData(
-      table: joinTable,
-      columns: joinColumns,
+      table: _transactionView,
       where: where,
       whereArgs: whereArgs,
       limit: limit,
@@ -127,28 +123,7 @@ mixin TransactionConnector on BaseConnector<TransactionModel> {
     return transactions;
   }
 
-  String get joinTable =>
-      'transactions '
-      'LEFT JOIN transaction_has_category ON transactions.id = transaction_has_category.transaction_id '
-      'LEFT JOIN category ON transaction_has_category.category_id = category.id '
-      'LEFT JOIN credit_card ON transactions.credit_card = credit_card.id ';
-
-  List<String> get joinColumns => [
-    'transactions.*',
-    'category.id as category_id',
-    'category.name as category_name',
-    'category.description as category_description',
-    'category.createdAt as category_createdAt',
-    'category.updatedAt as category_updatedAt',
-    'category.color as category_color',
-    'category.synced as category_synced',
-    'credit_card.id as credit_card_id',
-    'credit_card.name as credit_card_name',
-    'credit_card.color as credit_card_color',
-    'credit_card.createdAt as credit_card_createdAt',
-    'credit_card.updatedAt as credit_card_updatedAt',
-    'credit_card.synced as credit_card_synced',
-  ];
-
   String get transactionHasCategoryTable => 'transaction_has_category';
+
+  String get _transactionView => 'view_transactions';
 }

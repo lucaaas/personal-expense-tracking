@@ -141,7 +141,7 @@ class TransactionModel extends BaseModel<TransactionModel> with TransactionConne
 
   @override
   Future<void> sendUnsyncedToServer() async {
-    List<TransactionModel> unsyncedData = await filter(where: '$table.synced=0');
+    List<TransactionModel> unsyncedData = await filter(where: 'synced=0');
     for (TransactionModel model in unsyncedData) {
       await model.sendToServer();
       await _sendTransactionHasCategoryToServer();

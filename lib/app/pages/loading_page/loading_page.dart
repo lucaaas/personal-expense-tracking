@@ -25,7 +25,7 @@ class _LoadingPageState extends State<LoadingPage> {
   void _initApp() async {
     // try {
     DBHelper.getInstance();
-
+    await Future.delayed(const Duration(seconds: 3));
     if (FirebaseAuth.instance.currentUser != null) {
       await _sync();
     }

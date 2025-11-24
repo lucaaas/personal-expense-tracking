@@ -7,7 +7,11 @@ abstract mixin class BaseConnector<T extends BaseModel<dynamic>> {
   String get table;
 
   Future<int> remove(T model) async {
-    return await _helper.delete(table, 'id=?', [model.id]);
+    final int result = await _helper.delete(table, 'id=?', [model.id]);
+    model.synced = false;
+    updateSyncStatus(model);
+
+    return result;
   }
 
   Future<List<T>> filter({
