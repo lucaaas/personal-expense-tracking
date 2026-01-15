@@ -8,19 +8,27 @@ class CategoryModel extends BaseModel<CategoryModel> {
   String color;
   String? description;
 
-  CategoryModel(
-      {super.id, super.createdAt, required this.name, this.color = "0xFFFF9700", this.description});
+  CategoryModel({
+    super.id,
+    super.createdAt,
+    required this.name,
+    this.color = "0xFFFF9700",
+    this.description,
+  });
 
   CategoryModel.fromMap(Map<String, dynamic> data)
-      : name = data["name"],
-        color = data["color"].toString(),
-        description = data["description"],
-        super(id: data["id"], createdAt: DateTime.parse(data["createdAt"]));
+    : name = data["name"],
+      color = data["color"].toString(),
+      description = data["description"],
+      super(
+        id: data["id"],
+        createdAt: DateTime.parse(data["createdAt"]),
+        updatedAt: DateTime.parse(data['updatedAt']),
+        isDeleted: data['isDeleted'] == 1,
+        synced: data['synced'] == 1,
+      );
 
-  CategoryModel.empty()
-      : name = "",
-        color = "0xFFFF9700",
-        super();
+  CategoryModel.empty() : name = "", color = "0xFFFF9700", super();
 
   static Future<List<CategoryModel>> list() async {
     return CategoryModel.empty().getAll();
@@ -40,13 +48,7 @@ class CategoryModel extends BaseModel<CategoryModel> {
 
   @override
   Map<String, dynamic> toMap() {
-    return {
-      "id": id,
-      "createdAt": createdAt.toIso8601String(),
-      "name": name,
-      "color": color,
-      "description": description,
-    };
+    return {...super.toMap(), "name": name, "color": color, "description": description};
   }
 
   @override

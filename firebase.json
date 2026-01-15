@@ -1,0 +1,25 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "personal-expense-trackin-85d92",
+          "appId": "1:716834455101:android:bfbfda6de975514b103454",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "personal-expense-trackin-85d92",
+          "configurations": {
+            "android": "1:716834455101:android:bfbfda6de975514b103454",
+            "ios": "1:716834455101:ios:e66e1752583835f9103454"
+          }
+        }
+      }
+    }
+  },
+  "emulators": {
+    "singleProjectMode": true
+  }
+}

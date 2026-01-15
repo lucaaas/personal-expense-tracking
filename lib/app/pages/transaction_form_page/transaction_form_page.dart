@@ -47,6 +47,7 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         middle: Text(_controller.titlePage),
+        automaticBackgroundVisibility: false,
       ),
       child: Form(
         key: _controller.formKey,

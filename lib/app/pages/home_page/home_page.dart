@@ -45,7 +45,7 @@ class _HomePageState extends State<HomePage> {
     _transactionProvider = Provider.of<TransactionProvider>(context);
 
     return PageScaffoldWidget(
-      navigationBar: const CupertinoNavigationBar(),
+      contentPadding: EdgeInsets.fromLTRB(16, 32, 16, 0),
       child: _currentMonthInfo != null
           ? Consumer<TransactionProvider>(
               builder: (context, value, child) => Column(

@@ -35,6 +35,7 @@ class _StatementPageState extends State<StatementPage> {
       contentPadding: const EdgeInsets.all(0),
       navigationBar: const CupertinoNavigationBar(
         middle: Text("Extrato"),
+        automaticBackgroundVisibility: false,
       ),
       child: CustomScrollView(
         slivers: [
@@ -53,11 +54,7 @@ class _StatementPageState extends State<StatementPage> {
           if (!isLoading)
             ...(_buildMonthInformation())
           else
-            const SliverFillRemaining(
-              child: Center(
-                child: CircularProgressIndicator(),
-              ),
-            ),
+            const SliverFillRemaining(child: Center(child: CircularProgressIndicator())),
         ],
       ),
     );
@@ -66,15 +63,14 @@ class _StatementPageState extends State<StatementPage> {
   Future<void> _load() async {
     TransactionProvider provider = Provider.of<TransactionProvider>(context, listen: false);
 
-    provider.addListener(
-      () async {
-        TransactionCache transaction =
-            await provider.getTransactionsByMonthYear(provider.months.elementAt(_index));
-        setState(() {
-          _transaction = transaction;
-        });
-      },
-    );
+    provider.addListener(() async {
+      TransactionCache transaction = await provider.getTransactionsByMonthYear(
+        provider.months.elementAt(_index),
+      );
+      setState(() {
+        _transaction = transaction;
+      });
+    });
 
     String selectedMonth = provider.months.isEmpty ? '' : provider.months.last;
 
@@ -98,8 +94,9 @@ class _StatementPageState extends State<StatementPage> {
     });
 
     TransactionProvider provider = Provider.of<TransactionProvider>(context, listen: false);
-    final TransactionCache transaction =
-        await provider.getTransactionsByMonthYear(provider.months.elementAt(index));
+    final TransactionCache transaction = await provider.getTransactionsByMonthYear(
+      provider.months.elementAt(index),
+    );
 
     setState(() {
       _transaction = transaction;
@@ -113,15 +110,14 @@ class _StatementPageState extends State<StatementPage> {
     widgets.add(
       SliverPadding(
         padding: const EdgeInsets.all(10),
-        sliver: SliverToBoxAdapter(
-          child: MonthResume(transaction: _transaction!),
-        ),
+        sliver: SliverToBoxAdapter(child: MonthResume(transaction: _transaction!)),
       ),
     );
 
     if (_transaction == null || _transaction!.transactions.isEmpty) {
       widgets.add(
-          const SliverToBoxAdapter(child: Center(child: Text("Nenhuma transação encontrada"))));
+        const SliverToBoxAdapter(child: Center(child: Text("Nenhuma transação encontrada"))),
+      );
     } else {
       widgets.add(
         TransactionList(
@@ -190,10 +186,7 @@ class _HeaderDelegate extends SliverPersistentHeaderDelegate {
   @override
   Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
     return Align(
-      child: Container(
-        color: CupertinoTheme.of(context).scaffoldBackgroundColor,
-        child: tabBar,
-      ),
+      child: Container(color: CupertinoTheme.of(context).scaffoldBackgroundColor, child: tabBar),
     );
   }
 

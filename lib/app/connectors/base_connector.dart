@@ -7,10 +7,19 @@ abstract mixin class BaseConnector<T extends BaseModel<dynamic>> {
   String get table;
 
   Future<int> remove(T model) async {
-    return await _helper.delete(table, 'id=?', [model.id]);
+    final int result = await _helper.delete(table, 'id=?', [model.id]);
+    model.synced = false;
+    updateSyncStatus(model);
+
+    return result;
   }
 
-  Future<List<T>> filter({String? where, List<Object>? whereArgs, int? limit, String? orderBy}) async {
+  Future<List<T>> filter({
+    String? where,
+    List<Object>? whereArgs,
+    int? limit,
+    String? orderBy,
+  }) async {
     List<Map<String, dynamic>> data = await _helper.getData(
       table: table,
       where: where,
@@ -29,19 +38,38 @@ abstract mixin class BaseConnector<T extends BaseModel<dynamic>> {
     return models;
   }
 
-  Future<T> getById(int id) async {
+  Future<T> getById(String id) async {
     Map<String, dynamic> data = await _helper.getDataById(table: table, id: id);
     return toObject(data);
   }
 
   Future<int> insertOrUpdate(T model) async {
     if (model.id == null) {
-      int id = await _helper.insert(table: table, data: model.toMap());
-      model.id = id;
-      return id;
+      return insert(model);
     } else {
-      return await _helper.update(table: table, data: model.toMap(), where: 'id=?', whereArgs: [model.id]);
+      model.updatedAt = DateTime.now();
+      Map<String, dynamic> data = model.toMap();
+
+      return await _helper.update(table: table, data: data, where: 'id=?', whereArgs: [model.id]);
     }
+  }
+
+  Future<int> insert(T model) async {
+    Map<String, dynamic> data = model.toMap();
+    data['id'] = model.id;
+
+    String id = await _helper.insert(table: table, data: data);
+    model.id = id;
+    return 1;
+  }
+
+  Future<int> updateSyncStatus(T model) async {
+    return await _helper.update(
+      table: table,
+      data: {'synced': model.synced ? 1 : 0},
+      where: 'id=?',
+      whereArgs: [model.id],
+    );
   }
 
   T toObject(Map<String, dynamic> data);

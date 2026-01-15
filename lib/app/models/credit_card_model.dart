@@ -9,14 +9,17 @@ class CreditCardModel extends BaseModel<CreditCardModel> {
   CreditCardModel({super.id, super.createdAt, required this.name, required this.color});
 
   CreditCardModel.fromMap(Map<String, dynamic> data)
-      : name = data["name"],
-        color = data["color"].toString(),
-        super(id: data["id"], createdAt: DateTime.parse(data["createdAt"]));
+    : name = data["name"],
+      color = data["color"].toString(),
+      super(
+        id: data["id"],
+        createdAt: DateTime.parse(data["createdAt"]),
+        updatedAt: DateTime.parse(data['updatedAt']),
+        isDeleted: data['isDeleted'] == 1,
+        synced: data['synced'] == 1,
+      );
 
-  CreditCardModel.empty()
-      : name = "",
-        color = "0xFFFF9700",
-        super();
+  CreditCardModel.empty() : name = "", color = "0xFFFF9700", super();
 
   @override
   String get table => "credit_card";
@@ -32,7 +35,7 @@ class CreditCardModel extends BaseModel<CreditCardModel> {
     return CreditCardModel.empty().getAll();
   }
 
-  static Future<CreditCardModel> get(int id) async {
+  static Future<CreditCardModel> get(String id) async {
     return CreditCardModel.empty().getById(id);
   }
 
@@ -43,11 +46,6 @@ class CreditCardModel extends BaseModel<CreditCardModel> {
 
   @override
   Map<String, dynamic> toMap() {
-    return {
-      "id": id,
-      "createdAt": createdAt.toIso8601String(),
-      "name": name,
-      "color": color,
-    };
+    return {...super.toMap(), "name": name, "color": color};
   }
 }
