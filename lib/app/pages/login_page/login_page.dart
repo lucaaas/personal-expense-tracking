@@ -35,25 +35,44 @@ class _LoginPageState extends State<LoginPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.stretch,
+        spacing: 32,
         children: [
+          SvgPicture.asset('assets/logos/app_logo.svg', semanticsLabel: 'app_logo'),
+          Text("bem vindo", style: TextStyle(fontSize: 36), textAlign: TextAlign.center),
           CupertinoButton(
             onPressed: _signInWithGoogle,
-            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+
+            padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
             child: Container(
+              height: 52,
+              width: double.infinity,
+
               decoration: BoxDecoration(
-                border: BoxBorder.all(color: CupertinoTheme.of(context).primaryColor, width: 2),
-                borderRadius: BorderRadius.all(Radius.circular(10)),
+                color: CupertinoTheme.of(context).primaryColor,
+                borderRadius: BorderRadius.all(Radius.circular(24)),
               ),
               child: Row(
-                spacing: 10,
+                spacing: 32,
                 children: [
                   SvgPicture.asset('assets/logos/google.svg', semanticsLabel: 'google'),
-                  const Text('Entrar com Google'),
+                  Text(
+                    'Continuar com Google',
+                    style: TextStyle(
+                      color: CupertinoTheme.of(context).primaryContrastingColor,
+                      fontSize: 22,
+                    ),
+                  ),
                 ],
               ),
             ),
           ),
-          CupertinoButton(onPressed: _goToNextPage, child: const Text('Continuar como convidado')),
+          CupertinoButton(
+            onPressed: _goToNextPage,
+            child: const Text(
+              'Continuar como convidado',
+              style: TextStyle(fontSize: 16, decoration: TextDecoration.underline),
+            ),
+          ),
         ],
       ),
     );
